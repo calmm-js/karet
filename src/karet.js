@@ -89,11 +89,20 @@ function hasObs(props) {
   return false
 }
 
-function forEach({props, children}, fn) {
+function forEach(props, fn) {
   for (const key in props) {
     const val = props[key]
     if (val instanceof Observable) {
       fn(val)
+    } else if ("children" === key) {
+      const children = props[key]
+      if (children.constructor === Array) {
+        for (let i=0; i<children.length; ++i) {
+          const val = children[i]
+          if (val instanceof Observable)
+            fn(val)
+        }
+      }
     } else if ("style" === key) {
       for (const k in val) {
         const valK = val[k]
@@ -102,59 +111,72 @@ function forEach({props, children}, fn) {
       }
     }
   }
-  for (let i=0; i<children.length; ++i) {
-    const val = children[i]
-    if (val instanceof Observable)
-      fn(val)
-  }
 }
 
-function render({type, props, children}, values) {
-  const newProps = props ? {} : null
-  const newChildren = Array(children.length)
+const empty = []
+
+function render(props, values) {
+  let type
+  let newProps = null
+  let newChildren
 
   let k = -1
 
-  if (props) {
-    for (const key in props) {
-      const val = props[key]
+  for (const key in props) {
+    const val = props[key]
+    if ("children" === key) {
       if (val instanceof Observable) {
-        const valO = values[++k]
-        newProps[key] = valO
-      } else if ("style" === key) {
-        let newStyle
-        for (const i in val) {
+        newChildren = [values[++k]]
+      } else if (val.constructor === Array) {
+        newChildren = Array(val.length)
+        for (let i=0, n=val.length; i<n; ++i) {
           const valI = val[i]
-          if (valI instanceof Observable) {
-            if (!newStyle) {
-              newStyle = {}
-              for (const j in val) {
-                if (j === i)
-                  break
-                newStyle[j] = val[j]
-              }
-            }
-            newStyle[i] = values[++k]
-          } else if (newStyle) {
-            newStyle[i] = valI
-          }
+          if (valI instanceof Observable)
+            newChildren[i] = values[++k]
+          else
+            newChildren[i] = valI
         }
-        newProps.style = newStyle || val
-      } else {
-        newProps[key] = val
+      } else  {
+        newChildren = [val]
       }
+    } else if ("$$ref" === key) {
+      if (!newProps) newProps = {}
+      if (val instanceof Observable) {
+        newProps.ref = values[++k]
+      } else {
+        newProps.ref = val
+      }
+    } else if (val instanceof Observable) {
+      const valO = values[++k]
+      if (!newProps) newProps = {}
+      newProps[key] = valO
+    } else if ("style" === key) {
+      let newStyle
+      for (const i in val) {
+        const valI = val[i]
+        if (valI instanceof Observable) {
+          if (!newStyle) {
+            newStyle = {}
+            for (const j in val) {
+              if (j === i)
+                break
+              newStyle[j] = val[j]
+            }
+          }
+          newStyle[i] = values[++k]
+        } else if (newStyle) {
+          newStyle[i] = valI
+        }
+      }
+      newProps.style = newStyle || val
+    } else if ("$$type" === key) {
+      type = props[key]
+    } else {
+      if (!newProps) newProps = {}
+      newProps[key] = val
     }
   }
-
-  for (let i=0, n=children.length; i<n; ++i) {
-    const valI = children[i]
-    if (valI instanceof Observable)
-      newChildren[i] = values[++k]
-    else
-      newChildren[i] = valI
-  }
-
-  return React.createElement(type, newProps, ...newChildren)
+  return React.createElement(type, newProps, ...(newChildren || empty))
 }
 
 //
@@ -311,7 +333,15 @@ class Client {
     if (typeof type === "string" &&
         (children.find(x => x instanceof Observable) ||
          (props && hasObs(props)))) {
-      return React.createElement(FromClass, {type, props, children})
+      const newProps = {"$$type": type}
+      for (const key in props) {
+        const val = props[key]
+        if ("ref" === key)
+          newProps["$$ref"] = val
+        else
+          newProps[key] = val
+      }
+      return React.createElement(FromClass, newProps, ...children)
     } else {
       return React.createElement(type, props, ...children)
     }
