@@ -51,7 +51,7 @@ describe("fromKefir", () => {
 describe("context", () => {
   class Context extends React.Component {
     getChildContext() {
-      return {message: "Hello"}
+      return {message: Kefir.constant("Hello")}
     }
     render() {
       return <div>{this.props.children}</div>
