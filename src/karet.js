@@ -328,7 +328,8 @@ class FromClass extends LiftedComponent {
 
 //
 
-class Client {
+const client = {
+  ...React,
   createElement(type, props, ...children) {
     if (typeof type === "string" &&
         (children.find(x => x instanceof Observable) ||
@@ -348,4 +349,4 @@ class Client {
   }
 }
 
-export default new Client()
+export default client
