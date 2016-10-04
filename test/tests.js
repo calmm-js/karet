@@ -47,3 +47,24 @@ describe("basics", () => {
 describe("fromKefir", () => {
   testRender(fromKefir(Kefir.constant(<p>Yes</p>)), '<p>Yes</p>')
 })
+
+describe("context", () => {
+  class Context extends React.Component {
+    getChildContext() {
+      return {message: "Hello"}
+    }
+    render() {
+      return <div>{this.props.children}</div>
+    }
+  }
+  Context.childContextTypes = {message: React.PropTypes.any}
+
+  const Bottom = (_, context) => <div>{Kefir.constant("Bottom")} {context.message}</div>
+  Bottom.contextTypes = {message: React.PropTypes.any}
+
+  const Middle = () => <div>{Kefir.constant("Middle")} <Bottom/></div>
+  const Top = () => <div>{Kefir.constant("Top")} <Middle/></div>
+
+  testRender(<Context><Top/></Context>,
+             "<div><div>Top <div>Middle <div>Bottom Hello</div></div></div></div>")
+})
