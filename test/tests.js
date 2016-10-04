@@ -50,8 +50,11 @@ describe("fromKefir", () => {
 
 describe("context", () => {
   class Context extends React.Component {
+    constructor(props) {
+      super(props)
+    }
     getChildContext() {
-      return {message: Kefir.constant("Hello")}
+      return this.props.context
     }
     render() {
       return <div>{this.props.children}</div>
@@ -65,6 +68,6 @@ describe("context", () => {
   const Middle = () => <div>{Kefir.constant("Middle")} <Bottom/></div>
   const Top = () => <div>{Kefir.constant("Top")} <Middle/></div>
 
-  testRender(<Context><Top/></Context>,
+  testRender(<Context context={{message: Kefir.constant("Hello")}}><Top/></Context>,
              "<div><div>Top <div>Middle <div>Bottom Hello</div></div></div></div>")
 })
