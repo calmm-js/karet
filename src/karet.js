@@ -168,6 +168,7 @@ function render(props, values) {
           newStyle[i] = valI
         }
       }
+      if (!newProps) newProps = {}
       newProps.style = newStyle || val
     } else if ("$$type" === key) {
       type = props[key]
