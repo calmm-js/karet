@@ -329,21 +329,32 @@ class FromClass extends LiftedComponent {
 
 //
 
+const hasAnyObs = (props, children) =>
+  children.find(x => x instanceof Observable) || props && hasObs(props)
+
+const filterProps = (type, props) => {
+  const newProps = {"$$type": type}
+  for (const key in props) {
+    const val = props[key]
+    if ("ref" === key)
+      newProps["$$ref"] = val
+    else if ("karet-lift" !== key)
+      newProps[key] = val
+  }
+  return newProps
+}
+
 const client = {
   ...React,
   createElement(type, props, ...children) {
-    if (typeof type === "string" &&
-        (children.find(x => x instanceof Observable) ||
-         (props && hasObs(props)))) {
-      const newProps = {"$$type": type}
-      for (const key in props) {
-        const val = props[key]
-        if ("ref" === key)
-          newProps["$$ref"] = val
-        else
-          newProps[key] = val
+    if (typeof type === "string" && hasAnyObs(props, children)) {
+      return React.createElement(FromClass, filterProps(type, props), ...children)
+    } else if (props && props["karet-lift"] === true) {
+      if (hasAnyObs(props, children)) {
+        return React.createElement(FromClass, filterProps(type, props), ...children)
+      } else {
+        return React.createElement(type, R.dissoc("karet-lift", props), ...children)
       }
-      return React.createElement(FromClass, newProps, ...children)
     } else {
       return React.createElement(type, props, ...children)
     }

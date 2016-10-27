@@ -42,6 +42,17 @@ describe("basics", () => {
                {Kefir.constant("Hello")} {Kefir.constant("world!")}
              </a>,
              '<a href="#lol" style="color:red;">Hello world!</a>')
+
+  const Custom = ({prop, ...props}) => <div>{`${prop} ${JSON.stringify(props)}`}</div>
+
+  testRender(<Custom prop={Kefir.constant("not-lifted")} ref="test"/>,
+             '<div>[constant] {}</div>')
+
+  testRender(<Custom karet-lift prop={Kefir.constant("lifted")} ref="test"/>,
+             '<div>lifted {}</div>')
+
+  testRender(<Custom karet-lift prop={"lifted anyway"} ref="test"/>,
+             '<div>lifted anyway {}</div>')
 })
 
 describe("fromKefir", () => {
