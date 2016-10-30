@@ -1,48 +1,44 @@
-import * as R       from "ramda"
 import React        from "react"
 import {Observable} from "kefir"
+
+//
+
+const emptyArray = []
+
+const dissoc = (k, o) => {
+  const r = Object.assign({}, o)
+  delete r[k]
+  return r
+}
 
 //
 
 class LiftedComponent extends React.Component {
   constructor(props) {
     super(props)
-    this.state = this.theInitialState()
   }
   componentWillReceiveProps(nextProps) {
     this.doUnsubscribe()
     this.doSubscribe(nextProps)
   }
   componentWillMount() {
-    this.doUnsubscribe()
     this.doSubscribe(this.props)
-  }
-  shouldComponentUpdate(np, ns) {
-    return ns.rendered !== this.state.rendered
   }
   componentWillUnmount() {
     this.doUnsubscribe()
-    this.setState(this.theInitialState())
-  }
-  render() {
-    return this.state.rendered
   }
 }
 
 //
 
-const FromKefirEnd = {callback: null}
-const FromKefirNull = {callback: null, rendered: null}
-
 class FromKefir extends LiftedComponent {
   constructor(props) {
     super(props)
-  }
-  theInitialState() {
-    return FromKefirNull
+    this.callback = null
+    this.rendered = null
   }
   doUnsubscribe() {
-    const {callback} = this.state
+    const callback = this.callback
     if (callback)
       this.props.observable.offAny(callback)
   }
@@ -51,20 +47,23 @@ class FromKefir extends LiftedComponent {
       const callback = e => {
         switch (e.type) {
           case "value":
-            this.setState({rendered: e.value})
+            this.rendered = e.value
+            this.forceUpdate()
             break
           case "error":
             throw e.value
           case "end":
-            this.setState(FromKefirEnd)
-            break
+            this.callback = null
         }
       }
+      this.callback = callback
       observable.onAny(callback)
-      this.setState({callback})
     } else {
-      this.setState({rendered: observable})
+      this.rendered = observable
     }
+  }
+  render() {
+    return this.rendered
   }
 }
 
@@ -113,8 +112,6 @@ function forEach(props, fn) {
   }
 }
 
-const empty = []
-
 function render(props, values) {
   let type
   let newProps = null
@@ -136,7 +133,7 @@ function render(props, values) {
           else
             newChildren[i] = valI
         }
-      } else  {
+      } else {
         newChildren = [val]
       }
     } else if ("$$ref" === key) {
@@ -177,152 +174,112 @@ function render(props, values) {
       newProps[key] = val
     }
   }
-  return React.createElement(type, newProps, ...(newChildren || empty))
+  return React.createElement(type, newProps, ...(newChildren || emptyArray))
 }
 
 //
-
-function FakeComponent(state, props) {
-  this.props = props
-  this.state = state
-}
-
-FakeComponent.prototype.setState = function (newState) {
-  if ("renderer" in newState)
-    this.state.renderer = newState.renderer
-  if ("rendered" in newState)
-    this.state.rendered = newState.rendered
-}
-
-//
-
-function Renderer1(component, newProps) {
-  const state = {renderer: this, rendered: component.state.rendered}
-  this.component = new FakeComponent(state, newProps)
-  this.handler = e => this.doHandle(e)
-  forEach(newProps, observable => observable.onAny(this.handler))
-  this.component = component
-  component.setState(state)
-}
-
-Renderer1.prototype.unsubscribe = function () {
-  const handler = this.handler
-  if (handler)
-    forEach(this.component.props, observable => observable.offAny(handler))
-}
-
-Renderer1.prototype.doHandle = function (e) {
-  switch (e.type) {
-    case "value": {
-      const component = this.component
-      const rendered = render(component.props, [e.value])
-      if (!R.equals(component.state.rendered, rendered))
-        component.setState({rendered})
-      return
-    }
-    case "error":
-      throw e.value
-    default:
-      this.handler = null
-      this.component.setState(FromClassEnd)
-      return
-  }
-}
-
-//
-
-function RendererN(component, newProps, n) {
-  const state = {renderer: this, rendered: component.state.rendered}
-  this.component = new FakeComponent(state, newProps)
-  this.handlers = []
-  this.values = Array(n)
-
-  for (let i=0; i<n; ++i)
-    this.values[i] = this
-
-  forEach(newProps, observable => {
-    const i = this.handlers.length
-    const handler = e => this.doHandle(i, e)
-    this.handlers.push(handler)
-    observable.onAny(handler)
-  })
-
-  this.component = component
-  component.setState(state)
-}
-
-RendererN.prototype.unsubscribe = function () {
-  let i = -1
-  forEach(this.component.props, observable => {
-    const handler = this.handlers[++i]
-    if (handler)
-      observable.offAny(handler)
-  })
-}
-
-RendererN.prototype.doHandle = function (idx, e) {
-  switch (e.type) {
-    case "value": {
-      this.values[idx] = e.value
-
-      for (let i=this.values.length-1; 0 <= i; --i)
-        if (this.values[i] === this)
-          return
-
-      const component = this.component
-      const rendered = render(component.props, this.values)
-      if (!R.equals(component.state.rendered, rendered))
-        component.setState({rendered})
-      return
-    }
-    case "error":
-      throw e.value
-    default: {
-      this.handlers[idx] = null
-
-      const n = this.handlers.length
-
-      if (n !== this.values.length)
-        return
-
-      for (let i=0; i < n; ++i)
-        if (this.handlers[i])
-          return
-
-      this.component.setState(FromClassEnd)
-      return
-    }
-  }
-}
-
-//
-
-const FromClassEnd = {renderer: null}
-const FromClassNull = {renderer: null, rendered: null}
 
 class FromClass extends LiftedComponent {
   constructor(props) {
     super(props)
-  }
-  theInitialState() {
-    return FromClassNull
+    this.values = this
+    this.handlers = null
   }
   doUnsubscribe() {
-    const {renderer} = this.state
-    if (renderer)
-      renderer.unsubscribe()
+    const handlers = this.handlers
+    if (handlers) {
+      if (handlers instanceof Function) {
+        forEach(this.props, obs => obs.offAny(handlers))
+      } else {
+        let i = -1
+        forEach(this.props, obs => {
+          const handler = handlers[++i]
+          if (handler)
+            obs.offAny(handler)
+        })
+      }
+    }
   }
   doSubscribe(props) {
     let n = 0
-    forEach(props, () => n += 1)
+    forEach(props, () => ++n)
 
-    switch (n) {
-      case 1:
-        new Renderer1(this, props)
+    if (n === 1) {
+      this.values = this
+      const handlers = e => this.doHandle1(e)
+      this.handlers = handlers
+      forEach(props, obs => obs.onAny(handlers))
+    } else {
+      this.values = Array(n).fill(this)
+      this.handlers = []
+      forEach(props, obs => {
+        const handler = e => this.doHandleN(handler, e)
+        this.handlers.push(handler)
+        obs.onAny(handler)
+      })
+    }
+  }
+  doHandle1(e) {
+    switch (e.type) {
+      case "value": {
+        const value = e.value
+        if (this.values !== value) {
+          this.values = value
+          this.forceUpdate()
+        }
         break
-      default:
-        new RendererN(this, props, n)
+      }
+      case "error": throw e.value
+      default: {
+        this.values = [this.values]
+        this.handlers = null
+      }
+    }
+  }
+  doHandleN(handler, e) {
+    const handlers = this.handlers
+    let idx=0
+    while (handlers[idx] !== handler)
+      ++idx
+    switch (e.type) {
+      case "value": {
+        const value = e.value
+        const values = this.values
+        if (values[idx] !== value) {
+          values[idx] = value
+          this.forceUpdate()
+        }
         break
+      }
+      case "error": throw e.value
+      default: {
+        handlers[idx] = null
+
+        const n = handlers.length
+
+        if (n !== this.values.length)
+          return
+
+        for (let i=0; i < n; ++i)
+          if (handlers[i])
+            return
+
+        this.handlers = null
+      }
+    }
+  }
+  render() {
+    if (this.handlers instanceof Function) {
+      const value = this.values
+      if (value === this)
+        return null
+      return render(this.props, [value])
+    } else {
+      const values = this.values
+      for (let i=0, n=values.length; i<n; ++i)
+        if (values[i] === this)
+          return null
+      return render(this.props, values)
     }
   }
 }
@@ -353,7 +310,7 @@ const client = {
       if (hasAnyObs(props, children)) {
         return React.createElement(FromClass, filterProps(type, props), ...children)
       } else {
-        return React.createElement(type, R.dissoc("karet-lift", props), ...children)
+        return React.createElement(type, dissoc("karet-lift", props), ...children)
       }
     } else {
       return React.createElement(type, props, ...children)

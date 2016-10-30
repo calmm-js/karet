@@ -1,6 +1,6 @@
 {
   "name": "karet",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "JSX with Kefir, healthy?",
   "main": "lib/karet.js",
   "scripts": {
@@ -42,7 +42,6 @@
   },
   "dependencies": {
     "kefir": "^3.2.1",
-    "ramda": ">=0.20.1 <0.23.0",
     "react": "^15.0.1"
   }
 }
