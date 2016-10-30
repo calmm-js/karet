@@ -43,6 +43,10 @@ describe("basics", () => {
              </a>,
              '<a href="#lol" style="color:red;">Hello world!</a>')
 
+  testRender(<div>{Kefir.later(1000,0)}</div>, "")
+  testRender(<div>{Kefir.constant(1).merge(Kefir.later(1000,0))}</div>, "<div>1</div>")
+  testRender(<div>{Kefir.later(1000,0)} {Kefir.constant(0)}</div>, "")
+
   const Custom = ({prop, ...props}) => <div>{`${prop} ${JSON.stringify(props)}`}</div>
 
   testRender(<Custom prop={Kefir.constant("not-lifted")} ref="test"/>,
