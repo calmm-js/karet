@@ -39,7 +39,8 @@ import React   from "karet"
 const Link = ({...props}) => <RR.Link karet-lift {...props}/>
 ```
 
-to be able to use `Link` with embedded Kefir properties:
+to be able to use `Link` with embedded [Kefir](http://rpominov.github.io/kefir/)
+observables:
 
 ```jsx
 <Link href="https://www.youtube.com/watch?v=Rbm6GXllBiw">
