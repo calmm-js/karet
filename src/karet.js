@@ -47,7 +47,7 @@ class FromKefir extends LiftedComponent {
       const callback = e => {
         switch (e.type) {
           case "value":
-            this.rendered = e.value
+            this.rendered = e.value || null
             this.forceUpdate()
             break
           case "error":
@@ -59,7 +59,7 @@ class FromKefir extends LiftedComponent {
       this.callback = callback
       observable.onAny(callback)
     } else {
-      this.rendered = observable
+      this.rendered = observable || null
     }
   }
   render() {
