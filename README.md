@@ -47,3 +47,5 @@ observables:
   {Kefir.sequentially(1000, [3, 2, 1, "Boom!"])}
 </Link>
 ```
+
+So, that's about it.  **_Rock 'n' Roll!_**
