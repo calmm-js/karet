@@ -6,13 +6,13 @@ into [React](https://facebook.github.io/react/) Virtual DOM.
 
 ## Reference
 
-To use Karet, you simply import it as `React`
+To use Karet, you simply import it as `React`:
 
 ```jsx
 import React from "karet"
 ```
 
-and you can then write React components
+and you can then write React components:
 
 ```jsx
 const oncePerSecond = Kefir.interval(1000).toProperty(() => {})
@@ -29,15 +29,19 @@ observables.
 ### `karet-lift` attribute
 
 Karet only lifts built-in HTML elements implicitly.  You can instruct Karet to
-lift non-primitive elements by adding the `karet-lift` attribute to them:
+lift non-primitive elements by adding the `karet-lift` attribute to them.  For
+example, you could write:
 
 ```jsx
 import * as RR from "react-router"
+import React   from "karet"
 
 const Link = ({...props}) => <RR.Link karet-lift {...props}/>
+```
 
-// ...
+to be able to use `Link` with embedded Kefir properties:
 
+```jsx
 <Link href="https://www.youtube.com/watch?v=Rbm6GXllBiw">
   {Kefir.sequentially(1000, [3, 2, 1, "Boom!"])}
 </Link>
