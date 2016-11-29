@@ -3,7 +3,7 @@ import {Observable} from "kefir"
 
 //
 
-const emptyArray = []
+const isObs = x => x instanceof Observable
 
 function dissoc(k, o) {
   const r = {}
@@ -45,7 +45,7 @@ class FromKefir extends LiftedComponent {
       this.props.observable.offAny(callback)
   }
   doSubscribe({observable}) {
-    if (observable instanceof Observable) {
+    if (isObs(observable)) {
       const callback = e => {
         switch (e.type) {
           case "value":
@@ -77,12 +77,12 @@ export const fromKefir = observable =>
 function hasObs(props) {
   for (const key in props) {
     const val = props[key]
-    if (val instanceof Observable) {
+    if (isObs(val)) {
       return true
     } else if ("style" === key) {
       for (const k in val) {
         const valK = val[k]
-        if (valK instanceof Observable)
+        if (isObs(valK))
           return true
       }
     }
@@ -90,70 +90,71 @@ function hasObs(props) {
   return false
 }
 
-function forEach(props, fn) {
+function forEach(props, extra, fn) {
   for (const key in props) {
     const val = props[key]
-    if (val instanceof Observable) {
-      fn(val)
+    if (isObs(val)) {
+      fn(extra, val)
     } else if ("children" === key) {
       const children = props[key]
       if (children.constructor === Array) {
         for (let i=0; i<children.length; ++i) {
           const val = children[i]
-          if (val instanceof Observable)
-            fn(val)
+          if (isObs(val))
+            fn(extra, val)
         }
       }
     } else if ("style" === key) {
       for (const k in val) {
         const valK = val[k]
-        if (valK instanceof Observable)
-          fn(valK)
+        if (isObs(valK))
+          fn(extra, valK)
       }
     }
   }
 }
 
 function render(props, values) {
-  let type
+  let type = null
   let newProps = null
-  let newChildren
+  let newChildren = null
 
   let k = -1
 
   for (const key in props) {
     const val = props[key]
     if ("children" === key) {
-      if (val instanceof Observable) {
-        newChildren = [values[++k]]
+      if (isObs(val)) {
+        newChildren = values[++k]
       } else if (val.constructor === Array) {
-        newChildren = Array(val.length)
         for (let i=0, n=val.length; i<n; ++i) {
           const valI = val[i]
-          if (valI instanceof Observable)
+          if (isObs(valI)) {
+            if (!newChildren) {
+              newChildren = Array(val.length)
+              for (let j=0; j<i; ++j)
+                newChildren[j] = val[j]
+            }
             newChildren[i] = values[++k]
-          else
+          } else if (newChildren)
             newChildren[i] = valI
         }
+        if (!newChildren)
+          newChildren = val
       } else {
-        newChildren = [val]
+        newChildren = val
       }
     } else if ("$$ref" === key) {
-      if (!newProps) newProps = {}
-      if (val instanceof Observable) {
-        newProps.ref = values[++k]
-      } else {
-        newProps.ref = val
-      }
-    } else if (val instanceof Observable) {
-      const valO = values[++k]
-      if (!newProps) newProps = {}
-      newProps[key] = valO
+      newProps = newProps || {}
+      newProps.ref = isObs(val) ? values[++k] : val
+    } else if (isObs(val)) {
+      newProps = newProps || {}
+      newProps[key] = values[++k]
     } else if ("style" === key) {
       let newStyle
       for (const i in val) {
         const valI = val[i]
-        if (valI instanceof Observable) {
+        if (isObs(valI)) {
           if (!newStyle) {
             newStyle = {}
             for (const j in val) {
@@ -167,19 +168,38 @@ function render(props, values) {
           newStyle[i] = valI
         }
       }
-      if (!newProps) newProps = {}
+      newProps = newProps || {}
       newProps.style = newStyle || val
     } else if ("$$type" === key) {
       type = props[key]
     } else {
-      if (!newProps) newProps = {}
+      newProps = newProps || {}
       newProps[key] = val
     }
   }
-  return React.createElement(type, newProps, ...(newChildren || emptyArray))
+
+  return newChildren instanceof Array
+    ? React.createElement(type, newProps, ...newChildren)
+    : newChildren !== null
+    ? React.createElement(type, newProps, newChildren)
+    : React.createElement(type, newProps)
 }
 
 //
+
+function incValues(self) { self.values += 1 }
+function offAny1(handlers, obs) { obs.offAny(handlers) }
+function offAny(handlers, obs) {
+  const handler = handlers.pop()
+  if (handler)
+    obs.offAny(handler)
+}
+function onAny1(handlers, obs) { obs.onAny(handlers) }
+function onAny(self, obs) {
+  const handler = e => self.doHandleN(handler, e)
+  self.handlers.push(handler)
+  obs.onAny(handler)
+}
 
 class FromClass extends LiftedComponent {
   constructor(props) {
@@ -191,34 +211,26 @@ class FromClass extends LiftedComponent {
     const handlers = this.handlers
     if (handlers) {
       if (handlers instanceof Function) {
-        forEach(this.props, obs => obs.offAny(handlers))
+        forEach(this.props, handlers, offAny1)
       } else {
-        let i = -1
-        forEach(this.props, obs => {
-          const handler = handlers[++i]
-          if (handler)
-            obs.offAny(handler)
-        })
+        forEach(this.props, handlers.reverse(), offAny)
       }
     }
   }
   doSubscribe(props) {
-    let n = 0
-    forEach(props, () => ++n)
+    this.values = 0
+    forEach(props, this, incValues)
+    const n = this.values
 
     if (n === 1) {
       this.values = this
       const handlers = e => this.doHandle1(e)
       this.handlers = handlers
-      forEach(props, obs => obs.onAny(handlers))
+      forEach(props, handlers, onAny1)
     } else {
       this.values = Array(n).fill(this)
       this.handlers = []
-      forEach(props, obs => {
-        const handler = e => this.doHandleN(handler, e)
-        this.handlers.push(handler)
-        obs.onAny(handler)
-      })
+      forEach(props, this, onAny)
     }
   }
   doHandle1(e) {
@@ -256,16 +268,12 @@ class FromClass extends LiftedComponent {
       case "error": throw e.value
       default: {
         handlers[idx] = null
-
         const n = handlers.length
-
         if (n !== this.values.length)
           return
-
         for (let i=0; i < n; ++i)
           if (handlers[i])
             return
-
         this.handlers = null
       }
     }
@@ -288,10 +296,14 @@ class FromClass extends LiftedComponent {
 
 //
 
-const hasAnyObs = (props, children) =>
-  children.find(x => x instanceof Observable) || props && hasObs(props)
+function hasAnyObs(props, args) {
+  for (let i=2, n=args.length; i<n; ++i)
+    if (isObs(args[i]))
+      return true
+  return hasObs(args[1])
+}
 
-const filterProps = (type, props) => {
+function filterProps(type, props) {
   const newProps = {"$$type": type}
   for (const key in props) {
     const val = props[key]
@@ -305,18 +317,21 @@ const filterProps = (type, props) => {
 
 const client = {
   ...React,
-  createElement(type, props, ...children) {
-    if (typeof type === "string" && hasAnyObs(props, children)) {
-      return React.createElement(FromClass, filterProps(type, props), ...children)
+  createElement(...args) {
+    const type = args[0]
+    const props = args[1]
+    if (typeof type === "string" && hasAnyObs(props, args)) {
+      args[1] = filterProps(type, props)
+      args[0] = FromClass
     } else if (props && props["karet-lift"] === true) {
-      if (hasAnyObs(props, children)) {
-        return React.createElement(FromClass, filterProps(type, props), ...children)
+      if (hasAnyObs(props, args)) {
+        args[1] = filterProps(type, props)
+        args[0] = FromClass
       } else {
-        return React.createElement(type, dissoc("karet-lift", props), ...children)
+        args[1] = dissoc("karet-lift", props)
       }
-    } else {
-      return React.createElement(type, props, ...children)
     }
+    return React.createElement(...args)
   }
 }
 
