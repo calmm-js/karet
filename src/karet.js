@@ -5,9 +5,11 @@ import {Observable} from "kefir"
 
 const emptyArray = []
 
-const dissoc = (k, o) => {
-  const r = Object.assign({}, o)
-  delete r[k]
+function dissoc(k, o) {
+  const r = {}
+  for (const p in o)
+    if (p !== k)
+      r[p] = o[p]
   return r
 }
 
