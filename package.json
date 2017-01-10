@@ -34,13 +34,13 @@
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-2": "^6.18.0",
     "babel-register": "^6.18.0",
-    "eslint": "^3.11.0",
-    "eslint-plugin-react": "^6.7.1",
     "codecov": "^1.0.1",
+    "eslint": "^3.13.1",
+    "eslint-plugin-react": "^6.9.0",
     "mocha": "^3.2.0",
     "nyc": "^10.0.0",
-    "react-addons-test-utils": "^15.4.1",
-    "react-dom": "^15.4.1"
+    "react-addons-test-utils": "^15.4.2",
+    "react-dom": "^15.4.2"
   },
   "dependencies": {
     "kefir": "^3.2.1",
