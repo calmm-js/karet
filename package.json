@@ -1,6 +1,6 @@
 {
   "name": "karet",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Concise reactive components by embedding Kefir into React VDOM",
   "main": "lib/karet.js",
   "scripts": {
