@@ -298,8 +298,13 @@ class FromClass extends LiftedComponent {
 
 function hasAnyObs(props, args) {
   for (let i=2, n=args.length; i<n; ++i)
-    if (isObs(args[i]))
-      return true
+    if (Array.isArray(args[i])) {
+      for (let j=0, m=args[i].length; j<m; ++j)
+        if (isObs(args[i][j]))
+          return true
+    } else
+      if (isObs(args[i]))
+        return true
   return hasObs(args[1])
 }
 
