@@ -1,49 +1,47 @@
-import React        from "react"
+import React from "react"
 import {Observable} from "kefir"
+import {assocPartialU, dissocPartialU, object0, inherit} from "infestines"
 
 //
+
+const reactElement = React.createElement
+const Component = React.Component
 
 const isObs = x => x instanceof Observable
 
-function dissoc(k, o) {
-  const r = {}
-  for (const p in o)
-    if (p !== k)
-      r[p] = o[p]
-  return r
-}
-
 //
 
-class LiftedComponent extends React.Component {
-  constructor(props) {
-    super(props)
-  }
+function LiftedComponent(props) {
+  Component.call(this, props)
+}
+
+inherit(LiftedComponent, Component, {
   componentWillReceiveProps(nextProps) {
     this.doUnsubscribe()
     this.doSubscribe(nextProps)
-  }
+  },
   componentWillMount() {
     this.doSubscribe(this.props)
-  }
+  },
   componentWillUnmount() {
     this.doUnsubscribe()
   }
-}
+})
 
 //
 
-class FromKefir extends LiftedComponent {
-  constructor(props) {
-    super(props)
-    this.callback = null
-    this.rendered = null
-  }
+function FromKefir(props) {
+  LiftedComponent.call(this, props)
+  this.callback = null
+  this.rendered = null
+}
+
+inherit(FromKefir, LiftedComponent, {
   doUnsubscribe() {
     const callback = this.callback
     if (callback)
       this.props.observable.offAny(callback)
-  }
+  },
   doSubscribe({observable}) {
     if (isObs(observable)) {
       const callback = e => {
@@ -63,14 +61,13 @@ class FromKefir extends LiftedComponent {
     } else {
       this.rendered = observable || null
     }
-  }
+  },
   render() {
     return this.rendered
   }
-}
+})
 
-export const fromKefir = observable =>
-  React.createElement(FromKefir, {observable})
+export const fromKefir = observable => reactElement(FromKefir, {observable})
 
 //
 
@@ -179,10 +176,10 @@ function render(props, values) {
   }
 
   return newChildren instanceof Array
-    ? React.createElement(type, newProps, ...newChildren)
-    : newChildren !== null
-    ? React.createElement(type, newProps, newChildren)
-    : React.createElement(type, newProps)
+    ? reactElement.apply(null, [type, newProps].concat(newChildren))
+    : newChildren
+    ? reactElement(type, newProps, newChildren)
+    : reactElement(type, newProps)
 }
 
 //
@@ -201,12 +198,13 @@ function onAny(self, obs) {
   obs.onAny(handler)
 }
 
-class FromClass extends LiftedComponent {
-  constructor(props) {
-    super(props)
-    this.values = this
-    this.handlers = null
-  }
+function FromClass(props) {
+  LiftedComponent.call(this, props)
+  this.values = this
+  this.handlers = null
+}
+
+inherit(FromClass, LiftedComponent, {
   doUnsubscribe() {
     const handlers = this.handlers
     if (handlers) {
@@ -216,7 +214,7 @@ class FromClass extends LiftedComponent {
         forEach(this.props, handlers.reverse(), offAny)
       }
     }
-  }
+  },
   doSubscribe(props) {
     this.values = 0
     forEach(props, this, incValues)
@@ -232,7 +230,7 @@ class FromClass extends LiftedComponent {
       this.handlers = []
       forEach(props, this, onAny)
     }
-  }
+  },
   doHandle1(e) {
     switch (e.type) {
       case "value": {
@@ -249,7 +247,7 @@ class FromClass extends LiftedComponent {
         this.handlers = null
       }
     }
-  }
+  },
   doHandleN(handler, e) {
     const handlers = this.handlers
     let idx=0
@@ -277,7 +275,7 @@ class FromClass extends LiftedComponent {
         this.handlers = null
       }
     }
-  }
+  },
   render() {
     if (this.handlers instanceof Function) {
       const value = this.values
@@ -292,7 +290,7 @@ class FromClass extends LiftedComponent {
       return render(this.props, values)
     }
   }
-}
+})
 
 //
 
@@ -322,24 +320,21 @@ function filterProps(type, props) {
   return newProps
 }
 
-const client = {
-  ...React,
-  createElement(...args) {
-    const type = args[0]
-    const props = args[1]
-    if (typeof type === "string" && hasAnyObs(props, args)) {
+function createElement(...args) {
+  const type = args[0]
+  const props = args[1]
+  if (typeof type === "string" && hasAnyObs(props, args)) {
+    args[1] = filterProps(type, props)
+    args[0] = FromClass
+  } else if (props && props["karet-lift"] === true) {
+    if (hasAnyObs(props, args)) {
       args[1] = filterProps(type, props)
       args[0] = FromClass
-    } else if (props && props["karet-lift"] === true) {
-      if (hasAnyObs(props, args)) {
-        args[1] = filterProps(type, props)
-        args[0] = FromClass
-      } else {
-        args[1] = dissoc("karet-lift", props)
-      }
+    } else {
+      args[1] = dissocPartialU("karet-lift", props) || object0
     }
-    return React.createElement(...args)
   }
+  return reactElement(...args)
 }
 
-export default client
+export default assocPartialU("createElement", createElement, React)
