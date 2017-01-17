@@ -27,8 +27,8 @@ with VDOM that can have embedded [Kefir](http://rpominov.github.io/kefir/)
 observables.
 
 **NOTE:** The result, like the `Clock` above, is *just* a React component.  If
-you export it, you can use it as a React element in modules that do not import
-`karet`.
+you export it, you can use it just like any other React component and even in
+modules that do not import `karet`.
 
 ### <a name="karet-lift"></a> [`karet-lift` attribute](#karet-lift)
 
