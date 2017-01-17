@@ -68,10 +68,10 @@ describe("fromKefir", () => {
 
 describe("fromClass", () => {
   const P = fromClass("p")
-  testRender(<P>Hello</P>, '<p>Hello</p>')
+  testRender(<P $$ref={() => {}}>Hello</P>, '<p>Hello</p>')
 
   testRender(<P>Hello, {"world"}!</P>, '<p>Hello, world!</p>')
-  testRender(<P>Hello, {Kefir.constant("world")}!</P>, '<p>Hello, world!</p>')
+  testRender(<P ref={() => {}}>Hello, {Kefir.constant("world")}!</P>, '<p>Hello, world!</p>')
 })
 
 describe("context", () => {
