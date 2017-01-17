@@ -28,7 +28,7 @@ observables.
 
 **NOTE:** The result, like the `Clock` above, is just a React component.
 
-### <a name="karet-lift"></a> `karet-lift` attribute
+### <a name="karet-lift"></a> [`karet-lift` attribute](#karet-lift)
 
 Karet only lifts built-in HTML elements implicitly.  You can instruct Karet to
 lift non-primitive elements by adding the `karet-lift` attribute to them.  For
@@ -84,7 +84,7 @@ const Link2 = fromClass(RR.Link)
 use the [`$$ref`](#ref) attribute, which is not necessary when
 using [`karet-lift`](#karet-lift).
 
-#### <a name="ref"></a> `$$ref` attribute
+#### <a name="ref"></a> [`$$ref` attribute](#ref)
 
 The `$$ref` attribute on an element whose component is lifted using `fromClass`
 
