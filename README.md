@@ -48,7 +48,7 @@ embedded [Kefir](http://rpominov.github.io/kefir/) observables:
 
 ```jsx
 <Link1 href="https://www.youtube.com/watch?v=Rbm6GXllBiw"
-       ref={dom => dom && dom.focus()}>
+       ref={elem => elem && elem.focus()}>
   {Kefir.sequentially(1000, [3, 2, 1, "Boom!"])}
 </Link1>
 ```
@@ -92,7 +92,7 @@ The `$$ref` attribute on an element whose component is lifted using `fromClass`
 
 ```jsx
 <Link2 href="https://www.youtube.com/watch?v=Rbm6GXllBiw"
-       $$ref={dom => dom && dom.focus()}>
+       $$ref={elem => elem && elem.focus()}>
   {Kefir.sequentially(1000, [3, 2, 1, "Boom!"])}
 </Link2>
 ```
