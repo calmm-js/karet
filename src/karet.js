@@ -351,4 +351,3 @@ export default assocPartialU("createElement", createElement, React)
 
 export const fromClass = Class => props =>
   reactElement(FromClass, filterProps(Class, props))
-
