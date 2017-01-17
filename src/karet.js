@@ -204,6 +204,8 @@ function FromClass(props) {
   this.handlers = null
 }
 
+const array0 = Object.freeze([])
+
 inherit(FromClass, LiftedComponent, {
   doUnsubscribe() {
     const handlers = this.handlers
@@ -220,15 +222,22 @@ inherit(FromClass, LiftedComponent, {
     forEach(props, this, incValues)
     const n = this.values
 
-    if (n === 1) {
-      this.values = this
-      const handlers = e => this.doHandle1(e)
-      this.handlers = handlers
-      forEach(props, handlers, onAny1)
-    } else {
-      this.values = Array(n).fill(this)
-      this.handlers = []
-      forEach(props, this, onAny)
+    switch (n) {
+      case 0:
+        this.values = array0
+        this.handlers = array0
+        break
+      case 1: {
+        this.values = this
+        const handlers = e => this.doHandle1(e)
+        this.handlers = handlers
+        forEach(props, handlers, onAny1)
+        break
+      }
+      default:
+        this.values = Array(n).fill(this)
+        this.handlers = []
+        forEach(props, this, onAny)
     }
   },
   doHandle1(e) {
@@ -338,3 +347,9 @@ function createElement(...args) {
 }
 
 export default assocPartialU("createElement", createElement, React)
+
+//
+
+export const fromClass = Class => props =>
+  reactElement(FromClass, filterProps(Class, props))
+
