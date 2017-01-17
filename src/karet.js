@@ -225,7 +225,6 @@ inherit(FromClass, LiftedComponent, {
     switch (n) {
       case 0:
         this.values = array0
-        this.handlers = array0
         break
       case 1: {
         this.values = this
