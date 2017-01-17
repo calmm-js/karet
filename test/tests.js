@@ -72,6 +72,11 @@ describe("fromClass", () => {
 
   testRender(<P>Hello, {"world"}!</P>, '<p>Hello, world!</p>')
   testRender(<P ref={() => {}}>Hello, {Kefir.constant("world")}!</P>, '<p>Hello, world!</p>')
+
+  testRender(<P>{[Kefir.constant("Hello")]}</P>,
+             '<p>Hello</p>')
+
+  testRender(<P>{Kefir.later(1000,0)}</P>, "")
 })
 
 describe("context", () => {
