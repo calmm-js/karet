@@ -69,8 +69,8 @@ embedded [Kefir](http://rpominov.github.io/kefir/) observables:
 </Link1>
 ```
 
-(The silly `ref` attribute example is there as an example to contrast
-with [`$$ref`](#ref).)
+Note that the `ref` attribute is only there as an example to contrast
+with [`$$ref`](#ref).
 
 ### <a name="fromKefir"></a> [≡](#contents) [`fromKefir(vdomObservable)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
 
@@ -90,6 +90,16 @@ const Chosen = ({choice}) =>
 
 Here `ifte` from `karet-util` returns an observable that is `<True/>` when
 `choice` is true and otherwise `<False/>`.
+
+Note that the point of using `fromKefir` in the above example is that we don't
+want to wrap the `ifte(...)` inside an additional element like this:
+
+```jsx
+const Chosen = ({choice}) =>
+  <div>
+    {ifte(choice, <True/>, <False/>)}
+  </div>
+```
 
 ### <a name="fromClass"></a> [≡](#contents) [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Observable props)")
 
