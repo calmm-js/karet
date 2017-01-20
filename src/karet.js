@@ -1,6 +1,12 @@
 import React from "react"
 import {Observable} from "kefir"
-import {assocPartialU, dissocPartialU, object0, inherit} from "infestines"
+import {
+  array0,
+  assocPartialU,
+  dissocPartialU,
+  object0,
+  inherit
+} from "infestines"
 
 //
 
@@ -203,8 +209,6 @@ function FromClass(props) {
   this.values = this
   this.handlers = null
 }
-
-const array0 = Object.freeze([])
 
 inherit(FromClass, LiftedComponent, {
   doUnsubscribe() {
