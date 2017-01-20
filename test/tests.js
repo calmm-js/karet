@@ -1,6 +1,6 @@
 import * as Kefir from "kefir"
 
-import React, {fromKefir} from "../src/karet"
+import React, {fromClass, fromKefir} from "../src/karet"
 import ReactDOM from "react-dom/server"
 
 function show(x) {
@@ -64,6 +64,19 @@ describe("basics", () => {
 
 describe("fromKefir", () => {
   testRender(fromKefir(Kefir.constant(<p>Yes</p>)), '<p>Yes</p>')
+})
+
+describe("fromClass", () => {
+  const P = fromClass("p")
+  testRender(<P $$ref={() => {}}>Hello</P>, '<p>Hello</p>')
+
+  testRender(<P>Hello, {"world"}!</P>, '<p>Hello, world!</p>')
+  testRender(<P ref={() => {}}>Hello, {Kefir.constant("world")}!</P>, '<p>Hello, world!</p>')
+
+  testRender(<P>{[Kefir.constant("Hello")]}</P>,
+             '<p>Hello</p>')
+
+  testRender(<P>{Kefir.later(1000,0)}</P>, "")
 })
 
 describe("context", () => {

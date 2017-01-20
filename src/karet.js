@@ -1,6 +1,12 @@
 import React from "react"
 import {Observable} from "kefir"
-import {assocPartialU, dissocPartialU, object0, inherit} from "infestines"
+import {
+  array0,
+  assocPartialU,
+  dissocPartialU,
+  object0,
+  inherit
+} from "infestines"
 
 //
 
@@ -220,15 +226,21 @@ inherit(FromClass, LiftedComponent, {
     forEach(props, this, incValues)
     const n = this.values
 
-    if (n === 1) {
-      this.values = this
-      const handlers = e => this.doHandle1(e)
-      this.handlers = handlers
-      forEach(props, handlers, onAny1)
-    } else {
-      this.values = Array(n).fill(this)
-      this.handlers = []
-      forEach(props, this, onAny)
+    switch (n) {
+      case 0:
+        this.values = array0
+        break
+      case 1: {
+        this.values = this
+        const handlers = e => this.doHandle1(e)
+        this.handlers = handlers
+        forEach(props, handlers, onAny1)
+        break
+      }
+      default:
+        this.values = Array(n).fill(this)
+        this.handlers = []
+        forEach(props, this, onAny)
     }
   },
   doHandle1(e) {
@@ -338,3 +350,8 @@ function createElement(...args) {
 }
 
 export default assocPartialU("createElement", createElement, React)
+
+//
+
+export const fromClass = Class => props =>
+  reactElement(FromClass, filterProps(Class, props))
