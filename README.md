@@ -1,8 +1,20 @@
-[![npm version](https://badge.fury.io/js/karet.svg)](http://badge.fury.io/js/karet) [![Build Status](https://travis-ci.org/calmm-js/karet.svg?branch=master)](https://travis-ci.org/calmm-js/karet) [![Code Coverage](https://img.shields.io/codecov/c/github/calmm-js/karet/master.svg)](https://codecov.io/github/calmm-js/karet?branch=master) [![](https://david-dm.org/calmm-js/karet.svg)](https://david-dm.org/calmm-js/karet) [![](https://david-dm.org/calmm-js/karet/dev-status.svg)](https://david-dm.org/calmm-js/karet?type=dev)
+[ [≡](#contents) | [Reference](#reference) ]
+
+# Karet
 
 This is an experimental library that allows you to
 embed [Kefir](http://rpominov.github.io/kefir/) observables
 into [React](https://facebook.github.io/react/) Virtual DOM.
+
+[![npm version](https://badge.fury.io/js/karet.svg)](http://badge.fury.io/js/karet) [![Build Status](https://travis-ci.org/calmm-js/karet.svg?branch=master)](https://travis-ci.org/calmm-js/karet) [![Code Coverage](https://img.shields.io/codecov/c/github/calmm-js/karet/master.svg)](https://codecov.io/github/calmm-js/karet?branch=master) [![](https://david-dm.org/calmm-js/karet.svg)](https://david-dm.org/calmm-js/karet) [![](https://david-dm.org/calmm-js/karet/dev-status.svg)](https://david-dm.org/calmm-js/karet?type=dev)
+
+## Contents
+
+* [Reference](#reference)
+  * [`karet-lift` attribute](#karet-lift)
+  * [`fromKefir(vdomObservable)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
+  * [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Observable props)")
+    * [`$$ref` attribute](#ref)
 
 ## Reference
 
@@ -30,7 +42,7 @@ observables.
 you export it, you can use it just like any other React component and even in
 modules that do not import `karet`.
 
-### <a name="karet-lift"></a> [`karet-lift` attribute](#karet-lift)
+### <a name="karet-lift"></a> [≡](#contents) [`karet-lift` attribute](#karet-lift)
 
 Karet only lifts built-in HTML elements implicitly.  You can instruct Karet to
 lift non-primitive elements by adding the `karet-lift` attribute to them.  For
@@ -56,7 +68,7 @@ embedded [Kefir](http://rpominov.github.io/kefir/) observables:
 (The silly `ref` attribute example is there as an example to contrast
 with [`$$ref`](#ref).)
 
-### <a name="fromKefir"></a> [`fromKefir(vdomObservable)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
+### <a name="fromKefir"></a> [≡](#contents) [`fromKefir(vdomObservable)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
 
 In case the top-most element of a component depends on a Kefir observable, one
 can use `fromKefir`:
@@ -70,7 +82,7 @@ const choice = Atom(false)
 fromKefir(ifte(choice, <True/>, <False/>))
 ```
 
-### <a name="fromClass"></a> [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Observable props)")
+### <a name="fromClass"></a> [≡](#contents) [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Observable props)")
 
 Aside from using [`karet-lift`](#karet-lift) to lift particular elements, you
 can also lift components using `fromClass`:
@@ -86,7 +98,7 @@ const Link2 = fromClass(RR.Link)
 use the [`$$ref`](#ref) attribute, which is not necessary when
 using [`karet-lift`](#karet-lift).
 
-#### <a name="ref"></a> [`$$ref` attribute](#ref)
+#### <a name="ref"></a> [≡](#contents) [`$$ref` attribute](#ref)
 
 The `$$ref` attribute on an element whose component is lifted using `fromClass`
 
