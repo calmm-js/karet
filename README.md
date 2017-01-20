@@ -1,8 +1,8 @@
-[ [≡](#contents) | [Reference](#reference) ]
+[ [≡](#contents) | [Tutorial](#reference) | [Reference](#reference) ]
 
 # Karet
 
-This is an experimental library that allows you to
+Karet is an experimental library that allows you to
 embed [Kefir](http://rpominov.github.io/kefir/) observables
 into [React](https://facebook.github.io/react/) Virtual DOM.
 
@@ -10,13 +10,14 @@ into [React](https://facebook.github.io/react/) Virtual DOM.
 
 ## Contents
 
+* [Tutorial](#reference)
 * [Reference](#reference)
   * [`karet-lift` attribute](#karet-lift)
   * [`fromKefir(vdomObservable)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
   * [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Observable props)")
     * [`$$ref` attribute](#ref)
 
-## Reference
+## Tutorial
 
 To use Karet, you simply import it as `React`:
 
@@ -42,11 +43,14 @@ observables.
 you export it, you can use it just like any other React component and even in
 modules that do not import `karet`.
 
+## Reference
+
 ### <a name="karet-lift"></a> [≡](#contents) [`karet-lift` attribute](#karet-lift)
 
-Karet only lifts built-in HTML elements implicitly.  You can instruct Karet to
-lift non-primitive elements by adding the `karet-lift` attribute to them.  For
-example, you could write:
+Karet only lifts built-in HTML elements implicitly.  The `karet-lift` attribute
+on a non-primitive element instructs Karet to lift the element.
+
+For example, you could write:
 
 ```jsx
 import * as RR from "react-router"
@@ -70,22 +74,27 @@ with [`$$ref`](#ref).)
 
 ### <a name="fromKefir"></a> [≡](#contents) [`fromKefir(vdomObservable)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
 
-In case the top-most element of a component depends on a Kefir observable, one
-can use `fromKefir`:
+`fromKefir` allows one to convert a Kefir observable of React elements into a
+React element.  It is useful in case the top-most element of a component depends
+on a Kefir observable.
+
+For example:
 
 ```jsx
 import {fromKefir} from "karet"
 import {ifte} from "karet.util"
 
 const choice = Atom(false)
-// ...
-fromKefir(ifte(choice, <True/>, <False/>))
+
+const Chosen = () =>
+  fromKefir(ifte(choice, <True/>, <False/>))
 ```
 
 ### <a name="fromClass"></a> [≡](#contents) [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Observable props)")
 
-Aside from using [`karet-lift`](#karet-lift) to lift particular elements, you
-can also lift components using `fromClass`:
+`fromClass` allows one the lift a React component.
+
+For example:
 
 ```jsx
 import * as RR from "react-router"
@@ -96,7 +105,7 @@ const Link2 = fromClass(RR.Link)
 
 **WARNING:** A difficulty with lifting components is that you will then need to
 use the [`$$ref`](#ref) attribute, which is not necessary when
-using [`karet-lift`](#karet-lift).
+using [`karet-lift`](#karet-lift) to lift an element.
 
 #### <a name="ref"></a> [≡](#contents) [`$$ref` attribute](#ref)
 
