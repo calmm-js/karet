@@ -84,11 +84,12 @@ For example:
 import {fromKefir} from "karet"
 import {ifte} from "karet.util"
 
-const choice = Atom(false)
-
-const Chosen = () =>
+const Chosen = ({choice}) =>
   fromKefir(ifte(choice, <True/>, <False/>))
 ```
+
+Here `ifte` from `karet-util` returns an observable that is `<True/>` when
+`choice` is true and otherwise `<False/>`.
 
 ### <a name="fromClass"></a> [≡](#contents) [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Observable props)")
 
