@@ -13,7 +13,7 @@ into [React](https://facebook.github.io/react/) Virtual DOM.
 * [Tutorial](#tutorial)
 * [Reference](#reference)
   * [`karet-lift` attribute](#karet-lift)
-  * [`fromKefir(vdomObservable)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
+  * [`fromKefir(observableVDOM)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
   * [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Observable props)")
     * [`$$ref` attribute](#ref)
 
@@ -72,7 +72,7 @@ embedded [Kefir](http://rpominov.github.io/kefir/) observables:
 Note that the `ref` attribute is only there as an example to contrast
 with [`$$ref`](#ref).
 
-### <a name="fromKefir"></a> [≡](#contents) [`fromKefir(vdomObservable)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
+### <a name="fromKefir"></a> [≡](#contents) [`fromKefir(observableVDOM)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
 
 `fromKefir` allows one to convert a Kefir observable of React elements into a
 React element.  It is useful in case the top-most element of a component depends
