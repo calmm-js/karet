@@ -1,4 +1,4 @@
-[ [≡](#contents) | [Tutorial](#reference) | [Reference](#reference) ]
+[ [≡](#contents) | [Tutorial](#tutorial) | [Reference](#reference) ]
 
 # Karet
 
@@ -10,7 +10,7 @@ into [React](https://facebook.github.io/react/) Virtual DOM.
 
 ## Contents
 
-* [Tutorial](#reference)
+* [Tutorial](#tutorial)
 * [Reference](#reference)
   * [`karet-lift` attribute](#karet-lift)
   * [`fromKefir(vdomObservable)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
