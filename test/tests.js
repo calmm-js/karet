@@ -35,11 +35,12 @@ describe("basics", () => {
 
   testRender(<div onClick={() => {}}
                   style={{display: "block",
-                          color: Kefir.constant("red")}}>
+                          color: Kefir.constant("red"),
+                          background: "green"}}>
                <p>{Kefir.constant(["Hello"])}</p>
                <p>{Kefir.constant(["World"])}</p>
              </div>,
-             '<div style="display:block;color:red;"><p>Hello</p><p>World</p></div>')
+             '<div style="display:block;color:red;background:green;"><p>Hello</p><p>World</p></div>')
 
   testRender(<a href="#lol" style={Kefir.constant({color: "red"})}>
                {Kefir.constant("Hello")} {Kefir.constant("world!")}
