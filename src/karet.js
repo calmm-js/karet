@@ -4,8 +4,9 @@ import {
   array0,
   assocPartialU,
   dissocPartialU,
-  object0,
-  inherit
+  inherit,
+  isArray,
+  object0
 } from "infestines"
 
 //
@@ -100,7 +101,7 @@ function forEach(props, extra, fn) {
       fn(extra, val)
     } else if ("children" === key) {
       const children = props[key]
-      if (children.constructor === Array) {
+      if (isArray(children)) {
         for (let i=0; i<children.length; ++i) {
           const val = children[i]
           if (isObs(val))
@@ -129,7 +130,7 @@ function render(props, values) {
     if ("children" === key) {
       if (isObs(val)) {
         newChildren = values[++k]
-      } else if (val.constructor === Array) {
+      } else if (isArray(val)) {
         for (let i=0, n=val.length; i<n; ++i) {
           const valI = val[i]
           if (isObs(valI)) {
