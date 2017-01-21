@@ -24,6 +24,9 @@ describe("basics", () => {
   testRender(<p key="k" ref={() => {}}>Hello</p>,
              '<p>Hello</p>')
 
+  testRender(<p id={Kefir.constant("test")}>{null}</p>,
+             '<p id="test"></p>')
+
   testRender(<p key="k" ref={() => {}}>{Kefir.constant("Hello")}</p>,
              '<p>Hello</p>')
 
