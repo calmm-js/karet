@@ -99,11 +99,13 @@ function forEach(props, extra, fn) {
     const val = props[key]
     if (isObs(val)) {
       fn(extra, val)
-    } else if ("children" === key && isArray(val)) {
-      for (let i=0, n=val.length; i<n; ++i) {
-        const valI = val[i]
-        if (isObs(valI))
-          fn(extra, valI)
+    } else if ("children" === key) {
+      if (isArray(val)) {
+        for (let i=0, n=val.length; i<n; ++i) {
+          const valI = val[i]
+          if (isObs(valI))
+            fn(extra, valI)
+        }
       }
     } else if ("style" === key) {
       for (const k in val) {
@@ -145,6 +147,8 @@ function render(props, values) {
       } else {
         newChildren = val
       }
+    } else if ("$$type" === key) {
+      type = props[key]
     } else if ("$$ref" === key) {
       newProps = newProps || {}
       newProps.ref = isObs(val) ? values[++k] : val
@@ -171,8 +175,6 @@ function render(props, values) {
       }
       newProps = newProps || {}
       newProps.style = newStyle || val
-    } else if ("$$type" === key) {
-      type = props[key]
     } else {
       newProps = newProps || {}
       newProps[key] = val
