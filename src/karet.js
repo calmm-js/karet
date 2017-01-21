@@ -102,7 +102,7 @@ function forEach(props, extra, fn) {
     } else if ("children" === key) {
       const children = props[key]
       if (isArray(children)) {
-        for (let i=0; i<children.length; ++i) {
+        for (let i=0, n=children.length; i<n; ++i) {
           const val = children[i]
           if (isObs(val))
             fn(extra, val)
@@ -135,7 +135,7 @@ function render(props, values) {
           const valI = val[i]
           if (isObs(valI)) {
             if (!newChildren) {
-              newChildren = Array(val.length)
+              newChildren = Array(n)
               for (let j=0; j<i; ++j)
                 newChildren[j] = val[j]
             }
@@ -310,7 +310,7 @@ inherit(FromClass, LiftedComponent, {
 function hasAnyObs(props, args) {
   for (let i=2, n=args.length; i<n; ++i) {
     const arg = args[i]
-    if (Array.isArray(arg)) {
+    if (isArray(arg)) {
       for (let j=0, m=arg.length; j<m; ++j)
         if (isObs(arg[j]))
           return true
