@@ -99,14 +99,11 @@ function forEach(props, extra, fn) {
     const val = props[key]
     if (isObs(val)) {
       fn(extra, val)
-    } else if ("children" === key) {
-      const children = props[key]
-      if (isArray(children)) {
-        for (let i=0, n=children.length; i<n; ++i) {
-          const val = children[i]
-          if (isObs(val))
-            fn(extra, val)
-        }
+    } else if ("children" === key && isArray(val)) {
+      for (let i=0, n=val.length; i<n; ++i) {
+        const valI = val[i]
+        if (isObs(valI))
+          fn(extra, valI)
       }
     } else if ("style" === key) {
       for (const k in val) {
@@ -214,12 +211,10 @@ function FromClass(props) {
 inherit(FromClass, LiftedComponent, {
   doUnsubscribe() {
     const handlers = this.handlers
-    if (handlers) {
-      if (handlers instanceof Function) {
-        forEach(this.props, handlers, offAny1)
-      } else {
-        forEach(this.props, handlers.reverse(), offAny)
-      }
+    if (handlers instanceof Function) {
+      forEach(this.props, handlers, offAny1)
+    } else if (handlers) {
+      forEach(this.props, handlers.reverse(), offAny)
     }
   },
   doSubscribe(props) {
