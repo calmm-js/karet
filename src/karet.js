@@ -11,6 +11,16 @@ import {
 
 //
 
+const VALUE = "value"
+const ERROR = "error"
+const END = "end"
+const STYLE = "style"
+const CHILDREN = "children"
+const KARET_LIFT = "karet-lift"
+const DD_REF = "$$ref"
+
+//
+
 const reactElement = React.createElement
 const Component = React.Component
 
@@ -53,13 +63,13 @@ inherit(FromKefir, LiftedComponent, {
     if (isObs(observable)) {
       const callback = e => {
         switch (e.type) {
-          case "value":
+          case VALUE:
             this.rendered = e.value || null
             this.forceUpdate()
             break
-          case "error":
+          case ERROR:
             throw e.value
-          case "end":
+          case END:
             this.callback = null
         }
       }
@@ -83,7 +93,7 @@ function hasObs(props) {
     const val = props[key]
     if (isObs(val)) {
       return true
-    } else if ("style" === key) {
+    } else if (STYLE === key) {
       for (const k in val) {
         const valK = val[k]
         if (isObs(valK))
@@ -99,7 +109,7 @@ function forEach(props, extra, fn) {
     const val = props[key]
     if (isObs(val)) {
       fn(extra, val)
-    } else if ("children" === key) {
+    } else if (CHILDREN === key) {
       if (isArray(val)) {
         for (let i=0, n=val.length; i<n; ++i) {
           const valI = val[i]
@@ -107,7 +117,7 @@ function forEach(props, extra, fn) {
             fn(extra, valI)
         }
       }
-    } else if ("style" === key) {
+    } else if (STYLE === key) {
       for (const k in val) {
         const valK = val[k]
         if (isObs(valK))
@@ -126,7 +136,7 @@ function render(props, values) {
 
   for (const key in props) {
     const val = props[key]
-    if ("children" === key) {
+    if (CHILDREN === key) {
       if (isObs(val)) {
         newChildren = values[++k]
       } else if (isArray(val)) {
@@ -149,13 +159,13 @@ function render(props, values) {
       }
     } else if ("$$type" === key) {
       type = props[key]
-    } else if ("$$ref" === key) {
+    } else if (DD_REF === key) {
       newProps = newProps || {}
       newProps.ref = isObs(val) ? values[++k] : val
     } else if (isObs(val)) {
       newProps = newProps || {}
       newProps[key] = values[++k]
-    } else if ("style" === key) {
+    } else if (STYLE === key) {
       let newStyle
       for (const i in val) {
         const valI = val[i]
@@ -243,7 +253,7 @@ inherit(FromClass, LiftedComponent, {
   },
   doHandle1(e) {
     switch (e.type) {
-      case "value": {
+      case VALUE: {
         const value = e.value
         if (this.values !== value) {
           this.values = value
@@ -251,7 +261,7 @@ inherit(FromClass, LiftedComponent, {
         }
         break
       }
-      case "error": throw e.value
+      case ERROR: throw e.value
       default: {
         this.values = [this.values]
         this.handlers = null
@@ -264,7 +274,7 @@ inherit(FromClass, LiftedComponent, {
     while (handlers[idx] !== handler)
       ++idx
     switch (e.type) {
-      case "value": {
+      case VALUE: {
         const value = e.value
         const values = this.values
         if (values[idx] !== value) {
@@ -273,7 +283,7 @@ inherit(FromClass, LiftedComponent, {
         }
         break
       }
-      case "error": throw e.value
+      case ERROR: throw e.value
       default: {
         handlers[idx] = null
         const n = handlers.length
@@ -323,8 +333,8 @@ function filterProps(type, props) {
   for (const key in props) {
     const val = props[key]
     if ("ref" === key)
-      newProps["$$ref"] = val
-    else if ("karet-lift" !== key)
+      newProps[DD_REF] = val
+    else if (KARET_LIFT !== key)
       newProps[key] = val
   }
   return newProps
@@ -336,12 +346,12 @@ function createElement(...args) {
   if (typeof type === "string" && hasAnyObs(props, args)) {
     args[1] = filterProps(type, props)
     args[0] = FromClass
-  } else if (props && props["karet-lift"] === true) {
+  } else if (props && props[KARET_LIFT] === true) {
     if (hasAnyObs(props, args)) {
       args[1] = filterProps(type, props)
       args[0] = FromClass
     } else {
-      args[1] = dissocPartialU("karet-lift", props) || object0
+      args[1] = dissocPartialU(KARET_LIFT, props) || object0
     }
   }
   return reactElement(...args)
