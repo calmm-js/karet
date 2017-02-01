@@ -107,7 +107,7 @@ const Chosen = ({choice}) =>
 
 ### <a name="fromClass"></a> [≡](#contents) [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Observable props)")
 
-`fromClass` allows one the lift a React component.
+`fromClass` allows one to lift a React component.
 
 For example:
 
