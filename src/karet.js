@@ -93,6 +93,14 @@ function hasObs(props) {
     const val = props[key]
     if (isObs(val)) {
       return true
+    } else if (CHILDREN === key) {
+      if (isArray(val)) {
+        for (let i=0, n=val.length; i<n; ++i) {
+          const valI = val[i]
+          if (isObs(valI))
+            return true
+        }
+      }
     } else if (STYLE === key) {
       for (const k in val) {
         const valK = val[k]
