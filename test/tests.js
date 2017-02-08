@@ -64,6 +64,13 @@ describe("basics", () => {
 
   testRender(<Custom karet-lift prop={"lifted anyway"} ref="test"/>,
              '<div>lifted anyway {}</div>')
+
+  const Spread = props => <div {...props} />
+
+  testRender(<Spread>
+               Hello {Kefir.constant("world!")}
+             </Spread>,
+             '<div>Hello world!</div>')
 })
 
 describe("fromKefir", () => {
