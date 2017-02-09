@@ -12,7 +12,7 @@ Embedding observables into VDOM has the following benefits:
   [functional components](https://facebook.github.io/react/docs/components-and-props.html#functional-and-class-components),
   because you can then use observables for managing state
   and [`ref`](https://facebook.github.io/react/docs/refs-and-the-dom.html) for
-  component lifetime, leading to more concise code.
+  component lifetime, leading to more **_concise code_**.
 * It helps you to use React in an **_algorithmically efficient_** way:
   * The body of a functional component is only evaluated when the component is
     mounted.
