@@ -6,6 +6,7 @@ import {
   dissocPartialU,
   inherit,
   isArray,
+  isString,
   object0
 } from "infestines"
 
@@ -87,30 +88,6 @@ inherit(FromKefir, LiftedComponent, {
 export const fromKefir = observable => reactElement(FromKefir, {observable})
 
 //
-
-function hasObs(props) {
-  for (const key in props) {
-    const val = props[key]
-    if (isObs(val)) {
-      return true
-    } else if (CHILDREN === key) {
-      if (isArray(val)) {
-        for (let i=0, n=val.length; i<n; ++i) {
-          const valI = val[i]
-          if (isObs(valI))
-            return true
-        }
-      }
-    } else if (STYLE === key) {
-      for (const k in val) {
-        const valK = val[k]
-        if (isObs(valK))
-          return true
-      }
-    }
-  }
-  return false
-}
 
 function forEach(props, extra, fn) {
   for (const key in props) {
@@ -322,7 +299,26 @@ inherit(FromClass, LiftedComponent, {
 
 //
 
-function hasAnyObs(props, args) {
+function hasObsInProps(props) {
+  for (const key in props) {
+    const val = props[key]
+    if (isObs(val)) {
+      return true
+    } else if (CHILDREN === key) {
+      if (isArray(val))
+        for (let i=0, n=val.length; i<n; ++i)
+          if (isObs(val[i]))
+            return true
+    } else if (STYLE === key) {
+      for (const k in val)
+        if (isObs(val[k]))
+          return true
+    }
+  }
+  return false
+}
+
+function hasObsInArgs(args) {
   for (let i=2, n=args.length; i<n; ++i) {
     const arg = args[i]
     if (isArray(arg)) {
@@ -333,7 +329,7 @@ function hasAnyObs(props, args) {
       return true
     }
   }
-  return hasObs(args[1])
+  return hasObsInProps(args[1])
 }
 
 function filterProps(type, props) {
@@ -348,17 +344,18 @@ function filterProps(type, props) {
   return newProps
 }
 
+function hasLift(props) {
+  return props && props[KARET_LIFT] === true
+}
+
 function createElement(...args) {
   const type = args[0]
   const props = args[1]
-  if (typeof type === "string" && hasAnyObs(props, args)) {
-    args[1] = filterProps(type, props)
-    args[0] = FromClass
-  } else if (props && props[KARET_LIFT] === true) {
-    if (hasAnyObs(props, args)) {
+  if (isString(type) || hasLift(props)) {
+    if (hasObsInArgs(args)) {
       args[1] = filterProps(type, props)
       args[0] = FromClass
-    } else {
+    } else if (hasLift(props)) {
       args[1] = dissocPartialU(KARET_LIFT, props) || object0
     }
   }
