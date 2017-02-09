@@ -19,8 +19,8 @@ observables into VDOM has the following benefits:
       the
       [gotcha with ref](https://facebook.github.io/react/docs/refs-and-the-dom.html#caveats).
   * Only elements that contain embedded observables are rerendered when changes
-    are pushed through observables.  An update to a deeply nested VDOM node can
-    be an O(1) operation.
+    are pushed through observables.  An update to a deeply nested VDOM element
+    can be an O(1) operation.
 
 Using Karet couldn't be simpler.  You just `import React from "karet"` and you
 are good to go.
