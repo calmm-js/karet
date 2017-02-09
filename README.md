@@ -19,7 +19,8 @@ Embedding observables into VDOM has the following benefits:
     * This also helps you to avoid issues with functional components such as
       the
       [gotcha with ref](https://facebook.github.io/react/docs/refs-and-the-dom.html#caveats).
-  * Only elements that contain embedded observables are rerendered.
+  * Only elements that contain embedded observables are rerendered when changes
+    are pushed through observables.
 
 [![npm version](https://badge.fury.io/js/karet.svg)](http://badge.fury.io/js/karet)
 [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat)
