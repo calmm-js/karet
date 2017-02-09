@@ -7,6 +7,7 @@ embed [Kefir](http://rpominov.github.io/kefir/) observables
 into [React](https://facebook.github.io/react/) Virtual DOM.
 
 [![npm version](https://badge.fury.io/js/karet.svg)](http://badge.fury.io/js/karet)
+[![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat)
 [![Build Status](https://travis-ci.org/calmm-js/karet.svg?branch=master)](https://travis-ci.org/calmm-js/karet)
 [![Code Coverage](https://img.shields.io/codecov/c/github/calmm-js/karet/master.svg)](https://codecov.io/github/calmm-js/karet?branch=master)
 [![](https://david-dm.org/calmm-js/karet.svg)](https://david-dm.org/calmm-js/karet)
