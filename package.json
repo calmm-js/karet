@@ -1,7 +1,7 @@
 {
   "name": "karet",
-  "version": "0.2.7",
-  "description": "Concise reactive components by embedding Kefir into React VDOM",
+  "version": "1.0.0",
+  "description": "Karet is a library that allows you to embed Kefir observables into React VDOM",
   "main": "lib/karet.js",
   "scripts": {
     "dist": "babel src --source-maps inline --out-dir lib",

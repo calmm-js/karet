@@ -2,7 +2,7 @@
 
 # Karet
 
-Karet is an experimental library that allows you to
+Karet is a library that allows you to
 embed [Kefir](http://rpominov.github.io/kefir/) observables
 into [React](https://facebook.github.io/react/) Virtual DOM.
 
