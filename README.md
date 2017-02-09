@@ -13,13 +13,17 @@ observables into VDOM has the following benefits:
   and [`ref`](https://facebook.github.io/react/docs/refs-and-the-dom.html) for
   component lifetime, leading to more **_concise code_**.
 * It helps you to use React in an **_algorithmically efficient_** way:
-  * The body of a functional component is only evaluated when the component is
-    mounted.
+  * The body of a functional component is evaluated only once each time the
+    component is mounted.
     * This also helps you to avoid issues with functional components such as
       the
       [gotcha with ref](https://facebook.github.io/react/docs/refs-and-the-dom.html#caveats).
   * Only elements that contain embedded observables are rerendered when changes
-    are pushed through observables.
+    are pushed through observables.  An update to a deeply nested VDOM node can
+    be an O(1) operation.
+
+Using Karet couldn't be simpler.  You just `import React from "karet"` and you
+are good to go.
 
 [![npm version](https://badge.fury.io/js/karet.svg)](http://badge.fury.io/js/karet)
 [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat)
