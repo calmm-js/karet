@@ -4,9 +4,8 @@
 
 Karet is a library that allows you to
 embed [Kefir](http://rpominov.github.io/kefir/) observables
-into [React](https://facebook.github.io/react/) Virtual DOM.
-
-Embedding observables into VDOM has the following benefits:
+into [React](https://facebook.github.io/react/) Virtual DOM.  Embedding
+observables into VDOM has the following benefits:
 * It allows you to use
   only
   [functional components](https://facebook.github.io/react/docs/components-and-props.html#functional-and-class-components),
