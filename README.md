@@ -15,7 +15,7 @@ observables into VDOM has the following benefits:
 * It helps you to use React in an **_algorithmically efficient_** way:
   * The body of a functional component is evaluated only once each time the
     component is mounted.
-    * This also helps you to avoid issues with functional components such as
+    * This also helps you to avoid issues such as
       the
       [gotcha with ref](https://facebook.github.io/react/docs/refs-and-the-dom.html#caveats).
   * Only elements that contain embedded observables are rerendered when changes
