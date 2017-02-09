@@ -15,11 +15,12 @@
     "url": "git+https://github.com/calmm-js/karet.git"
   },
   "keywords": [
-    "react",
     "jsx",
-    "dom",
     "kefir",
-    "reactive"
+    "observables",
+    "react",
+    "reactive",
+    "vdom"
   ],
   "license": "MIT",
   "bugs": {
