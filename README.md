@@ -6,6 +6,21 @@ Karet is a library that allows you to
 embed [Kefir](http://rpominov.github.io/kefir/) observables
 into [React](https://facebook.github.io/react/) Virtual DOM.
 
+Embedding observables into VDOM has the following benefits:
+* It allows you to use
+  only
+  [functional components](https://facebook.github.io/react/docs/components-and-props.html#functional-and-class-components),
+  because you can then use observables for managing state
+  and [`ref`](https://facebook.github.io/react/docs/refs-and-the-dom.html) for
+  component lifetime, leading to more concise code.
+* It helps you to use React in an **_algorithmically efficient_** way:
+  * The body of a functional component is only evaluated when the component is
+    mounted.
+    * This also helps you to avoid issues with functional components such as
+      the
+      [gotcha with ref](https://facebook.github.io/react/docs/refs-and-the-dom.html#caveats).
+  * Only elements that contain embedded observables are rerendered.
+
 [![npm version](https://badge.fury.io/js/karet.svg)](http://badge.fury.io/js/karet)
 [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat)
 [![Build Status](https://travis-ci.org/calmm-js/karet.svg?branch=master)](https://travis-ci.org/calmm-js/karet)
