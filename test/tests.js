@@ -1,6 +1,6 @@
 import * as Kefir from "kefir"
 
-import React, {fromClass, fromKefir} from "../src/karet"
+import React, {fromClass, fromKefir} from "../dist/karet.cjs"
 import ReactDOM from "react-dom/server"
 
 function show(x) {
