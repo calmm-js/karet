@@ -5,6 +5,7 @@ import replace     from "rollup-plugin-replace"
 import uglify      from "rollup-plugin-uglify"
 
 export default {
+  exports: "named",
   external: ["infestines", "react", "kefir"],
   globals: {"infestines": "I"},
   plugins: [].concat(
