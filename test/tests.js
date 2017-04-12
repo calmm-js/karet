@@ -2,6 +2,7 @@ import * as Kefir from "kefir"
 
 import React, {fromClass, fromKefir} from "../dist/karet.cjs"
 import ReactDOM from "react-dom/server"
+import PropTypes from "prop-types"
 
 function show(x) {
   switch (typeof x) {
@@ -102,10 +103,10 @@ describe("context", () => {
       return <div>{this.props.children}</div>
     }
   }
-  Context.childContextTypes = {message: React.PropTypes.any}
+  Context.childContextTypes = {message: PropTypes.any}
 
   const Bottom = (_, context) => <div>{Kefir.constant("Bottom")} {context.message}</div>
-  Bottom.contextTypes = {message: React.PropTypes.any}
+  Bottom.contextTypes = {message: PropTypes.any}
 
   const Middle = () => <div>{Kefir.constant("Middle")} <Bottom/></div>
   const Top = () => <div>{Kefir.constant("Top")} <Middle/></div>
