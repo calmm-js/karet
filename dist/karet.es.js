@@ -1,4 +1,5 @@
-import React from 'react';
+import { Component, PropTypes, createElement } from 'react';
+import * as React from 'react';
 import { Observable } from 'kefir';
 import { array0, assocPartialU, dissocPartialU, inherit, isArray, isString, object0 } from 'infestines';
 
@@ -14,8 +15,8 @@ var DD_REF = "$$ref";
 
 //
 
-var reactElement = React.createElement;
-var Component = React.Component;
+var reactElement = createElement;
+var Component$1 = Component;
 
 var isObs = function isObs(x) {
   return x instanceof Observable;
@@ -24,10 +25,10 @@ var isObs = function isObs(x) {
 //
 
 function LiftedComponent(props) {
-  Component.call(this, props);
+  Component$1.call(this, props);
 }
 
-inherit(LiftedComponent, Component, {
+inherit(LiftedComponent, Component$1, {
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
     this.doUnsubscribe();
     this.doSubscribe(nextProps);
@@ -349,7 +350,7 @@ function hasLift(props) {
   return props && props[KARET_LIFT] === true;
 }
 
-function createElement() {
+function createElement$1() {
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
@@ -367,9 +368,9 @@ function createElement() {
   return reactElement.apply(undefined, args);
 }
 
-var karet = process.env.NODE_ENV === "production" ? assocPartialU("createElement", createElement, React) : Object.defineProperty(assocPartialU("createElement", createElement, dissocPartialU("PropTypes", React)), "PropTypes", {
+var karet = process.env.NODE_ENV === "production" ? assocPartialU("createElement", createElement$1, React) : Object.defineProperty(assocPartialU("createElement", createElement$1, dissocPartialU("PropTypes", React)), "PropTypes", {
   get: function get() {
-    return React.PropTypes;
+    return PropTypes;
   }
 });
 

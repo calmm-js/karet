@@ -8,15 +8,22 @@ export default {
   exports: "named",
   external: ["infestines", "react", "kefir"],
   globals: {"infestines": "I"},
-  plugins: [].concat(
-    process.env.NODE_ENV
-    ? [replace({"process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)})]
-    : [],
-    [nodeResolve()],
-    [commonjs({include: 'node_modules/**'})],
-    [babel()],
-    process.env.NODE_ENV === "production"
-    ? [uglify()]
-    : []
-  )
+  plugins: [
+    process.env.NODE_ENV &&
+      replace({"process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)}),
+    nodeResolve(),
+    commonjs({
+      include: "node_modules/**",
+      namedExports: {
+        "node_modules/react/react.js": [
+          "Component",
+          "PropTypes",
+          "createElement"
+        ]
+      }
+    }),
+    babel(),
+    process.env.NODE_ENV === "production" &&
+      uglify()
+  ].filter(x => x)
 }

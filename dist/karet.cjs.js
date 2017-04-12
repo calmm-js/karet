@@ -2,9 +2,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var React = _interopDefault(require('react'));
+var React = require('react');
 var kefir = require('kefir');
 var infestines = require('infestines');
 
@@ -21,7 +19,7 @@ var DD_REF = "$$ref";
 //
 
 var reactElement = React.createElement;
-var Component = React.Component;
+var Component$1 = React.Component;
 
 var isObs = function isObs(x) {
   return x instanceof kefir.Observable;
@@ -30,10 +28,10 @@ var isObs = function isObs(x) {
 //
 
 function LiftedComponent(props) {
-  Component.call(this, props);
+  Component$1.call(this, props);
 }
 
-infestines.inherit(LiftedComponent, Component, {
+infestines.inherit(LiftedComponent, Component$1, {
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
     this.doUnsubscribe();
     this.doSubscribe(nextProps);
@@ -355,7 +353,7 @@ function hasLift(props) {
   return props && props[KARET_LIFT] === true;
 }
 
-function createElement() {
+function createElement$1() {
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
@@ -373,7 +371,7 @@ function createElement() {
   return reactElement.apply(undefined, args);
 }
 
-var karet = process.env.NODE_ENV === "production" ? infestines.assocPartialU("createElement", createElement, React) : Object.defineProperty(infestines.assocPartialU("createElement", createElement, infestines.dissocPartialU("PropTypes", React)), "PropTypes", {
+var karet = process.env.NODE_ENV === "production" ? infestines.assocPartialU("createElement", createElement$1, React) : Object.defineProperty(infestines.assocPartialU("createElement", createElement$1, infestines.dissocPartialU("PropTypes", React)), "PropTypes", {
   get: function get() {
     return React.PropTypes;
   }
