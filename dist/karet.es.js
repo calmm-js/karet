@@ -367,7 +367,11 @@ function createElement() {
   return reactElement.apply(undefined, args);
 }
 
-var karet = assocPartialU("createElement", createElement, React);
+var karet = process.env.NODE_ENV === "production" ? assocPartialU("createElement", createElement, React) : Object.defineProperty(assocPartialU("createElement", createElement, dissocPartialU("PropTypes", React)), "PropTypes", {
+  get: function get() {
+    return React.PropTypes;
+  }
+});
 
 //
 
