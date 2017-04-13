@@ -29,11 +29,9 @@ const isObs = x => x instanceof Observable
 
 //
 
-function LiftedComponent(props) {
+const LiftedComponent = /*#__PURE__*/inherit(function LiftedComponent(props) {
   Component.call(this, props)
-}
-
-inherit(LiftedComponent, Component, {
+}, Component, {
   componentWillReceiveProps(nextProps) {
     this.doUnsubscribe()
     this.doSubscribe(nextProps)
@@ -48,13 +46,11 @@ inherit(LiftedComponent, Component, {
 
 //
 
-function FromKefir(props) {
+const FromKefir = /*#__PURE__*/inherit(function FromKefir(props) {
   LiftedComponent.call(this, props)
   this.callback = null
   this.rendered = null
-}
-
-inherit(FromKefir, LiftedComponent, {
+}, LiftedComponent, {
   doUnsubscribe() {
     const callback = this.callback
     if (callback)
@@ -199,13 +195,11 @@ function onAny(self, obs) {
   obs.onAny(handler)
 }
 
-function FromClass(props) {
+const FromClass = /*#__PURE__*/inherit(function FromClass(props) {
   LiftedComponent.call(this, props)
   this.values = this
   this.handlers = null
-}
-
-inherit(FromClass, LiftedComponent, {
+}, LiftedComponent, {
   doUnsubscribe() {
     const handlers = this.handlers
     if (handlers instanceof Function) {
