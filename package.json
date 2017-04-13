@@ -57,7 +57,7 @@
     "rollup-plugin-uglify": "^1.0.1"
   },
   "dependencies": {
-    "infestines": "^0.4.1",
+    "infestines": "^0.4.4",
     "react": "^15.0.1"
   },
   "peerDependencies": {
