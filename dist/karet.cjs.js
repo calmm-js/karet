@@ -27,11 +27,9 @@ var isObs = function isObs(x) {
 
 //
 
-function LiftedComponent(props) {
+var LiftedComponent = /*#__PURE__*/infestines.inherit(function LiftedComponent(props) {
   Component$1.call(this, props);
-}
-
-infestines.inherit(LiftedComponent, Component$1, {
+}, Component$1, {
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
     this.doUnsubscribe();
     this.doSubscribe(nextProps);
@@ -46,13 +44,11 @@ infestines.inherit(LiftedComponent, Component$1, {
 
 //
 
-function FromKefir(props) {
+var FromKefir = /*#__PURE__*/infestines.inherit(function FromKefir(props) {
   LiftedComponent.call(this, props);
   this.callback = null;
   this.rendered = null;
-}
-
-infestines.inherit(FromKefir, LiftedComponent, {
+}, LiftedComponent, {
   doUnsubscribe: function doUnsubscribe() {
     var callback = this.callback;
     if (callback) this.props.observable.offAny(callback);
@@ -201,13 +197,11 @@ function onAny(self, obs) {
   obs.onAny(handler);
 }
 
-function FromClass(props) {
+var FromClass = /*#__PURE__*/infestines.inherit(function FromClass(props) {
   LiftedComponent.call(this, props);
   this.values = this;
   this.handlers = null;
-}
-
-infestines.inherit(FromClass, LiftedComponent, {
+}, LiftedComponent, {
   doUnsubscribe: function doUnsubscribe() {
     var handlers = this.handlers;
     if (handlers instanceof Function) {
