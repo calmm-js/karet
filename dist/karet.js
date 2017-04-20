@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('react'), require('kefir'), require('infestines')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'react', 'kefir', 'infestines'], factory) :
-	(factory((global.karet = global.karet || {}),global.React,global.kefir,global.I));
+	(factory((global.karet = global.karet || {}),global.React,global.Kefir,global.I));
 }(this, (function (exports,React,kefir,infestines) { 'use strict';
 
 //
