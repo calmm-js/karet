@@ -33,14 +33,11 @@ const LiftedComponent = /*#__PURE__*/inherit(function LiftedComponent(props) {
   Component.call(this, props)
 }, Component, {
   componentWillReceiveProps(nextProps) {
-    this.doUnsubscribe()
+    this.componentWillUnmount()
     this.doSubscribe(nextProps)
   },
   componentWillMount() {
     this.doSubscribe(this.props)
-  },
-  componentWillUnmount() {
-    this.doUnsubscribe()
   }
 })
 
@@ -48,10 +45,10 @@ const LiftedComponent = /*#__PURE__*/inherit(function LiftedComponent(props) {
 
 const FromKefir = /*#__PURE__*/inherit(function FromKefir(props) {
   LiftedComponent.call(this, props)
-  this.callback = null
+  this.callback =
   this.rendered = null
 }, LiftedComponent, {
-  doUnsubscribe() {
+  componentWillUnmount() {
     const callback = this.callback
     if (callback)
       this.props.observable.offAny(callback)
@@ -190,7 +187,34 @@ function offAny(handlers, obs) {
 }
 function onAny1(handlers, obs) { obs.onAny(handlers) }
 function onAny(self, obs) {
-  const handler = e => self.doHandleN(handler, e)
+  const handler = e => {
+    const handlers = self.handlers
+    let idx=0
+    while (handlers[idx] !== handler)
+      ++idx
+    switch (e.type) {
+      case VALUE: {
+        const value = e.value
+        const values = self.values
+        if (values[idx] !== value) {
+          values[idx] = value
+          self.forceUpdate()
+        }
+        break
+      }
+      case ERROR: throw e.value
+      default: {
+        handlers[idx] = null
+        const n = handlers.length
+        if (n !== self.values.length)
+          return
+        for (let i=0; i < n; ++i)
+          if (handlers[i])
+            return
+        self.handlers = null
+      }
+    }
+  }
   self.handlers.push(handler)
   obs.onAny(handler)
 }
@@ -200,7 +224,7 @@ const FromClass = /*#__PURE__*/inherit(function FromClass(props) {
   this.values = this
   this.handlers = null
 }, LiftedComponent, {
-  doUnsubscribe() {
+  componentWillUnmount() {
     const handlers = this.handlers
     if (handlers instanceof Function) {
       forEach(this.props, handlers, offAny1)
@@ -219,7 +243,23 @@ const FromClass = /*#__PURE__*/inherit(function FromClass(props) {
         break
       case 1: {
         this.values = this
-        const handlers = e => this.doHandle1(e)
+        const handlers = e => {
+          switch (e.type) {
+            case VALUE: {
+              const value = e.value
+              if (this.values !== value) {
+                this.values = value
+                this.forceUpdate()
+              }
+              break
+            }
+            case ERROR: throw e.value
+            default: {
+              this.values = [this.values]
+              this.handlers = null
+            }
+          }
+        }
         this.handlers = handlers
         forEach(props, handlers, onAny1)
         break
@@ -228,51 +268,6 @@ const FromClass = /*#__PURE__*/inherit(function FromClass(props) {
         this.values = Array(n).fill(this)
         this.handlers = []
         forEach(props, this, onAny)
-    }
-  },
-  doHandle1(e) {
-    switch (e.type) {
-      case VALUE: {
-        const value = e.value
-        if (this.values !== value) {
-          this.values = value
-          this.forceUpdate()
-        }
-        break
-      }
-      case ERROR: throw e.value
-      default: {
-        this.values = [this.values]
-        this.handlers = null
-      }
-    }
-  },
-  doHandleN(handler, e) {
-    const handlers = this.handlers
-    let idx=0
-    while (handlers[idx] !== handler)
-      ++idx
-    switch (e.type) {
-      case VALUE: {
-        const value = e.value
-        const values = this.values
-        if (values[idx] !== value) {
-          values[idx] = value
-          this.forceUpdate()
-        }
-        break
-      }
-      case ERROR: throw e.value
-      default: {
-        handlers[idx] = null
-        const n = handlers.length
-        if (n !== this.values.length)
-          return
-        for (let i=0; i < n; ++i)
-          if (handlers[i])
-            return
-        this.handlers = null
-      }
     }
   },
   render() {
