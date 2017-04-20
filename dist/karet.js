@@ -1,7 +1,8 @@
-import { Component, PropTypes, createElement } from 'react';
-import * as React from 'react';
-import { Observable } from 'kefir';
-import { array0, assocPartialU, dissocPartialU, inherit, isArray, isString, object0 } from 'infestines';
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('react'), require('kefir'), require('infestines')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'react', 'kefir', 'infestines'], factory) :
+	(factory((global.karet = global.karet || {}),global.React,global.kefir,global.I));
+}(this, (function (exports,React,kefir,infestines) { 'use strict';
 
 //
 
@@ -15,16 +16,16 @@ var DD_REF = "$$ref";
 
 //
 
-var reactElement = createElement;
-var Component$1 = Component;
+var reactElement = React.createElement;
+var Component$1 = React.Component;
 
 var isObs = function isObs(x) {
-  return x instanceof Observable;
+  return x instanceof kefir.Observable;
 };
 
 //
 
-var LiftedComponent = /*#__PURE__*/inherit(function LiftedComponent(props) {
+var LiftedComponent = /*#__PURE__*/infestines.inherit(function LiftedComponent(props) {
   Component$1.call(this, props);
 }, Component$1, {
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
@@ -38,7 +39,7 @@ var LiftedComponent = /*#__PURE__*/inherit(function LiftedComponent(props) {
 
 //
 
-var FromKefir = /*#__PURE__*/inherit(function FromKefir(props) {
+var FromKefir = /*#__PURE__*/infestines.inherit(function FromKefir(props) {
   LiftedComponent.call(this, props);
   this.callback = this.rendered = null;
 }, LiftedComponent, {
@@ -87,7 +88,7 @@ function forEach(props, extra, fn) {
     if (isObs(val)) {
       fn(extra, val);
     } else if (CHILDREN === key) {
-      if (isArray(val)) {
+      if (infestines.isArray(val)) {
         for (var i = 0, n = val.length; i < n; ++i) {
           var valI = val[i];
           if (isObs(valI)) fn(extra, valI);
@@ -114,7 +115,7 @@ function _render(props, values) {
     if (CHILDREN === key) {
       if (isObs(val)) {
         newChildren = values[++k];
-      } else if (isArray(val)) {
+      } else if (infestines.isArray(val)) {
         for (var i = 0, n = val.length; i < n; ++i) {
           var valI = val[i];
           if (isObs(valI)) {
@@ -216,7 +217,7 @@ function onAny(self, obs) {
   obs.onAny(handler);
 }
 
-var FromClass = /*#__PURE__*/inherit(function FromClass(props) {
+var FromClass = /*#__PURE__*/infestines.inherit(function FromClass(props) {
   LiftedComponent.call(this, props);
   this.values = this;
   this.handlers = null;
@@ -238,7 +239,7 @@ var FromClass = /*#__PURE__*/inherit(function FromClass(props) {
 
     switch (n) {
       case 0:
-        this.values = array0;
+        this.values = infestines.array0;
         break;
       case 1:
         {
@@ -295,7 +296,7 @@ function hasObsInProps(props) {
     if (isObs(val)) {
       return true;
     } else if (CHILDREN === key) {
-      if (isArray(val)) for (var i = 0, n = val.length; i < n; ++i) {
+      if (infestines.isArray(val)) for (var i = 0, n = val.length; i < n; ++i) {
         if (isObs(val[i])) return true;
       }
     } else if (STYLE === key) {
@@ -310,7 +311,7 @@ function hasObsInProps(props) {
 function hasObsInArgs(args) {
   for (var i = 2, n = args.length; i < n; ++i) {
     var arg = args[i];
-    if (isArray(arg)) {
+    if (infestines.isArray(arg)) {
       for (var j = 0, m = arg.length; j < m; ++j) {
         if (isObs(arg[j])) return true;
       }
@@ -341,20 +342,20 @@ function createElement$1() {
 
   var type = args[0];
   var props = args[1];
-  if (isString(type) || hasLift(props)) {
+  if (infestines.isString(type) || hasLift(props)) {
     if (hasObsInArgs(args)) {
       args[1] = filterProps(type, props);
       args[0] = FromClass;
     } else if (hasLift(props)) {
-      args[1] = dissocPartialU(KARET_LIFT, props) || object0;
+      args[1] = infestines.dissocPartialU(KARET_LIFT, props) || infestines.object0;
     }
   }
   return reactElement.apply(undefined, args);
 }
 
-var karet = process.env.NODE_ENV === "production" ? assocPartialU("createElement", createElement$1, React) : Object.defineProperty(assocPartialU("createElement", createElement$1, dissocPartialU("PropTypes", React)), "PropTypes", {
+var karet = Object.defineProperty(infestines.assocPartialU("createElement", createElement$1, infestines.dissocPartialU("PropTypes", React)), "PropTypes", {
   get: function get() {
-    return PropTypes;
+    return React.PropTypes;
   }
 });
 
@@ -366,4 +367,10 @@ var fromClass = function fromClass(Class) {
   };
 };
 
-export { fromKefir, fromClass };export default karet;
+exports.fromKefir = fromKefir;
+exports['default'] = karet;
+exports.fromClass = fromClass;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));

@@ -31,14 +31,11 @@ var LiftedComponent = /*#__PURE__*/infestines.inherit(function LiftedComponent(p
   Component$1.call(this, props);
 }, Component$1, {
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-    this.doUnsubscribe();
+    this.componentWillUnmount();
     this.doSubscribe(nextProps);
   },
   componentWillMount: function componentWillMount() {
     this.doSubscribe(this.props);
-  },
-  componentWillUnmount: function componentWillUnmount() {
-    this.doUnsubscribe();
   }
 });
 
@@ -46,10 +43,9 @@ var LiftedComponent = /*#__PURE__*/infestines.inherit(function LiftedComponent(p
 
 var FromKefir = /*#__PURE__*/infestines.inherit(function FromKefir(props) {
   LiftedComponent.call(this, props);
-  this.callback = null;
-  this.rendered = null;
+  this.callback = this.rendered = null;
 }, LiftedComponent, {
-  doUnsubscribe: function doUnsubscribe() {
+  componentWillUnmount: function componentWillUnmount() {
     var callback = this.callback;
     if (callback) this.props.observable.offAny(callback);
   },
@@ -191,7 +187,33 @@ function onAny1(handlers, obs) {
 }
 function onAny(self, obs) {
   var handler = function handler(e) {
-    return self.doHandleN(handler, e);
+    var handlers = self.handlers;
+    var idx = 0;
+    while (handlers[idx] !== handler) {
+      ++idx;
+    }switch (e.type) {
+      case VALUE:
+        {
+          var value = e.value;
+          var values = self.values;
+          if (values[idx] !== value) {
+            values[idx] = value;
+            self.forceUpdate();
+          }
+          break;
+        }
+      case ERROR:
+        throw e.value;
+      default:
+        {
+          handlers[idx] = null;
+          var n = handlers.length;
+          if (n !== self.values.length) return;
+          for (var i = 0; i < n; ++i) {
+            if (handlers[i]) return;
+          }self.handlers = null;
+        }
+    }
   };
   self.handlers.push(handler);
   obs.onAny(handler);
@@ -202,7 +224,7 @@ var FromClass = /*#__PURE__*/infestines.inherit(function FromClass(props) {
   this.values = this;
   this.handlers = null;
 }, LiftedComponent, {
-  doUnsubscribe: function doUnsubscribe() {
+  componentWillUnmount: function componentWillUnmount() {
     var handlers = this.handlers;
     if (handlers instanceof Function) {
       forEach(this.props, handlers, offAny1);
@@ -225,7 +247,24 @@ var FromClass = /*#__PURE__*/infestines.inherit(function FromClass(props) {
         {
           this.values = this;
           var handlers = function handlers(e) {
-            return _this2.doHandle1(e);
+            switch (e.type) {
+              case VALUE:
+                {
+                  var value = e.value;
+                  if (_this2.values !== value) {
+                    _this2.values = value;
+                    _this2.forceUpdate();
+                  }
+                  break;
+                }
+              case ERROR:
+                throw e.value;
+              default:
+                {
+                  _this2.values = [_this2.values];
+                  _this2.handlers = null;
+                }
+            }
           };
           this.handlers = handlers;
           forEach(props, handlers, onAny1);
@@ -235,55 +274,6 @@ var FromClass = /*#__PURE__*/infestines.inherit(function FromClass(props) {
         this.values = Array(n).fill(this);
         this.handlers = [];
         forEach(props, this, onAny);
-    }
-  },
-  doHandle1: function doHandle1(e) {
-    switch (e.type) {
-      case VALUE:
-        {
-          var value = e.value;
-          if (this.values !== value) {
-            this.values = value;
-            this.forceUpdate();
-          }
-          break;
-        }
-      case ERROR:
-        throw e.value;
-      default:
-        {
-          this.values = [this.values];
-          this.handlers = null;
-        }
-    }
-  },
-  doHandleN: function doHandleN(handler, e) {
-    var handlers = this.handlers;
-    var idx = 0;
-    while (handlers[idx] !== handler) {
-      ++idx;
-    }switch (e.type) {
-      case VALUE:
-        {
-          var value = e.value;
-          var values = this.values;
-          if (values[idx] !== value) {
-            values[idx] = value;
-            this.forceUpdate();
-          }
-          break;
-        }
-      case ERROR:
-        throw e.value;
-      default:
-        {
-          handlers[idx] = null;
-          var n = handlers.length;
-          if (n !== this.values.length) return;
-          for (var i = 0; i < n; ++i) {
-            if (handlers[i]) return;
-          }this.handlers = null;
-        }
     }
   },
   render: function render() {
