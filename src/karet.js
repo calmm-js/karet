@@ -354,9 +354,7 @@ function createElement(...args) {
 export default process.env.NODE_ENV === "production"
   ? assocPartialU("createElement", createElement, React)
   : Object.defineProperty(assocPartialU("createElement", createElement, dissocPartialU("PropTypes", React)), "PropTypes", {
-    get: function () {
-      return React.PropTypes
-    }
+    get: (React => () => React.PropTypes)(React)
   })
 
 //
