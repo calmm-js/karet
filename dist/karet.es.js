@@ -1,4 +1,4 @@
-import { Component, PropTypes, createElement } from 'react';
+import { Component, createElement } from 'react';
 import * as React from 'react';
 import { Observable } from 'kefir';
 import { array0, assocPartialU, dissocPartialU, inherit, isArray, isString, object0 } from 'infestines';
@@ -353,9 +353,11 @@ function createElement$1() {
 }
 
 var karet = process.env.NODE_ENV === "production" ? assocPartialU("createElement", createElement$1, React) : Object.defineProperty(assocPartialU("createElement", createElement$1, dissocPartialU("PropTypes", React)), "PropTypes", {
-  get: function get() {
-    return PropTypes;
-  }
+  get: function (React$$1) {
+    return function () {
+      return React$$1.PropTypes;
+    };
+  }(React)
 });
 
 //

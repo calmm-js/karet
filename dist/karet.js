@@ -354,9 +354,11 @@ function createElement$1() {
 }
 
 var karet = Object.defineProperty(infestines.assocPartialU("createElement", createElement$1, infestines.dissocPartialU("PropTypes", React)), "PropTypes", {
-  get: function get() {
-    return React.PropTypes;
-  }
+  get: function (React$$1) {
+    return function () {
+      return React$$1.PropTypes;
+    };
+  }(React)
 });
 
 //
