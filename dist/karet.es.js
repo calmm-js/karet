@@ -81,25 +81,48 @@ var fromKefir = function fromKefir(observable) {
 
 //
 
-function forEach(props, extra, fn) {
-  for (var key in props) {
-    var val = props[key];
-    if (isObs(val)) {
-      fn(extra, val);
-    } else if (CHILDREN === key) {
-      if (isArray(val)) {
-        for (var i = 0, n = val.length; i < n; ++i) {
-          var valI = val[i];
-          if (isObs(valI)) fn(extra, valI);
-        }
+function renderChildren(children, at, values) {
+  if (isObs(children)) {
+    return values[++at[0]];
+  } else if (isArray(children)) {
+    var newChildren = children;
+    for (var i = 0, n = children.length; i < n; ++i) {
+      var childI = children[i];
+      var newChildI = childI;
+      if (isObs(childI)) {
+        newChildI = values[++at[0]];
+      } else if (isArray(childI)) {
+        newChildI = renderChildren(childI, at, values);
       }
-    } else if (STYLE === key) {
-      for (var k in val) {
-        var valK = val[k];
-        if (isObs(valK)) fn(extra, valK);
+      if (newChildI !== childI) {
+        if (newChildren === children) newChildren = children.slice(0);
+        newChildren[i] = newChildI;
       }
     }
+    return newChildren;
+  } else {
+    return children;
   }
+}
+
+function renderStyle(style, at, values) {
+  var newStyle = undefined;
+  for (var i in style) {
+    var styleI = style[i];
+    if (isObs(styleI)) {
+      if (!newStyle) {
+        newStyle = {};
+        for (var j in style) {
+          if (j === i) break;
+          newStyle[j] = style[j];
+        }
+      }
+      newStyle[i] = values[++at[0]];
+    } else if (newStyle) {
+      newStyle[i] = styleI;
+    }
+  }
+  return newStyle || style;
 }
 
 function _render(props, values) {
@@ -107,57 +130,23 @@ function _render(props, values) {
   var newProps = null;
   var newChildren = null;
 
-  var k = -1;
+  var at = [-1];
 
   for (var key in props) {
     var val = props[key];
     if (CHILDREN === key) {
-      if (isObs(val)) {
-        newChildren = values[++k];
-      } else if (isArray(val)) {
-        for (var i = 0, n = val.length; i < n; ++i) {
-          var valI = val[i];
-          if (isObs(valI)) {
-            if (!newChildren) {
-              newChildren = Array(n);
-              for (var j = 0; j < i; ++j) {
-                newChildren[j] = val[j];
-              }
-            }
-            newChildren[i] = values[++k];
-          } else if (newChildren) newChildren[i] = valI;
-        }
-        if (!newChildren) newChildren = val;
-      } else {
-        newChildren = val;
-      }
+      newChildren = renderChildren(val, at, values);
     } else if ("$$type" === key) {
       type = props[key];
     } else if (DD_REF === key) {
       newProps = newProps || {};
-      newProps.ref = isObs(val) ? values[++k] : val;
+      newProps.ref = isObs(val) ? values[++at[0]] : val;
     } else if (isObs(val)) {
       newProps = newProps || {};
-      newProps[key] = values[++k];
+      newProps[key] = values[++at[0]];
     } else if (STYLE === key) {
-      var newStyle = void 0;
-      for (var _i in val) {
-        var _valI = val[_i];
-        if (isObs(_valI)) {
-          if (!newStyle) {
-            newStyle = {};
-            for (var _j in val) {
-              if (_j === _i) break;
-              newStyle[_j] = val[_j];
-            }
-          }
-          newStyle[_i] = values[++k];
-        } else if (newStyle) {
-          newStyle[_i] = _valI;
-        }
-      }
       newProps = newProps || {};
-      newProps.style = newStyle || val;
+      newProps.style = renderStyle(val, at, values) || val;
     } else {
       newProps = newProps || {};
       newProps[key] = val;
@@ -165,6 +154,31 @@ function _render(props, values) {
   }
 
   return newChildren instanceof Array ? reactElement.apply(null, [type, newProps].concat(newChildren)) : newChildren ? reactElement(type, newProps, newChildren) : reactElement(type, newProps);
+}
+
+//
+
+function forEachInChildrenArray(children, extra, fn) {
+  for (var i = 0, n = children.length; i < n; ++i) {
+    var childI = children[i];
+    if (isObs(childI)) fn(extra, childI);else if (isArray(childI)) forEachInChildrenArray(childI, extra, fn);
+  }
+}
+
+function forEachInProps(props, extra, fn) {
+  for (var key in props) {
+    var val = props[key];
+    if (isObs(val)) {
+      fn(extra, val);
+    } else if (CHILDREN === key) {
+      if (isArray(val)) forEachInChildrenArray(val, extra, fn);
+    } else if (STYLE === key) {
+      for (var k in val) {
+        var valK = val[k];
+        if (isObs(valK)) fn(extra, valK);
+      }
+    }
+  }
 }
 
 //
@@ -224,16 +238,16 @@ var FromClass = /*#__PURE__*/inherit(function FromClass(props) {
   componentWillUnmount: function componentWillUnmount() {
     var handlers = this.handlers;
     if (handlers instanceof Function) {
-      forEach(this.props, handlers, offAny1);
+      forEachInProps(this.props, handlers, offAny1);
     } else if (handlers) {
-      forEach(this.props, handlers.reverse(), offAny);
+      forEachInProps(this.props, handlers.reverse(), offAny);
     }
   },
   doSubscribe: function doSubscribe(props) {
     var _this2 = this;
 
     this.values = 0;
-    forEach(props, this, incValues);
+    forEachInProps(props, this, incValues);
     var n = this.values;
 
     switch (n) {
@@ -264,13 +278,13 @@ var FromClass = /*#__PURE__*/inherit(function FromClass(props) {
             }
           };
           this.handlers = handlers;
-          forEach(props, handlers, onAny1);
+          forEachInProps(props, handlers, onAny1);
           break;
         }
       default:
         this.values = Array(n).fill(this);
         this.handlers = [];
-        forEach(props, this, onAny);
+        forEachInProps(props, this, onAny);
     }
   },
   render: function render() {
@@ -289,15 +303,21 @@ var FromClass = /*#__PURE__*/inherit(function FromClass(props) {
 
 //
 
+function hasObsInChildrenArray(i, children) {
+  for (var n = children.length; i < n; ++i) {
+    var child = children[i];
+    if (isObs(child) || isArray(child) && hasObsInChildrenArray(0, child)) return true;
+  }
+  return false;
+}
+
 function hasObsInProps(props) {
   for (var key in props) {
     var val = props[key];
     if (isObs(val)) {
       return true;
     } else if (CHILDREN === key) {
-      if (isArray(val)) for (var i = 0, n = val.length; i < n; ++i) {
-        if (isObs(val[i])) return true;
-      }
+      if (isArray(val) && hasObsInChildrenArray(0, val)) return true;
     } else if (STYLE === key) {
       for (var k in val) {
         if (isObs(val[k])) return true;
@@ -307,19 +327,7 @@ function hasObsInProps(props) {
   return false;
 }
 
-function hasObsInArgs(args) {
-  for (var i = 2, n = args.length; i < n; ++i) {
-    var arg = args[i];
-    if (isArray(arg)) {
-      for (var j = 0, m = arg.length; j < m; ++j) {
-        if (isObs(arg[j])) return true;
-      }
-    } else if (isObs(arg)) {
-      return true;
-    }
-  }
-  return hasObsInProps(args[1]);
-}
+//
 
 function filterProps(type, props) {
   var newProps = { "$$type": type };
@@ -330,22 +338,18 @@ function filterProps(type, props) {
   return newProps;
 }
 
-function hasLift(props) {
-  return props && props[KARET_LIFT] === true;
-}
-
 function createElement$1() {
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
 
   var type = args[0];
-  var props = args[1];
-  if (isString(type) || hasLift(props)) {
-    if (hasObsInArgs(args)) {
+  var props = args[1] || object0;
+  if (isString(type) || props[KARET_LIFT]) {
+    if (hasObsInChildrenArray(2, args) || hasObsInProps(props)) {
       args[1] = filterProps(type, props);
       args[0] = FromClass;
-    } else if (hasLift(props)) {
+    } else if (props[KARET_LIFT]) {
       args[1] = dissocPartialU(KARET_LIFT, props) || object0;
     }
   }
