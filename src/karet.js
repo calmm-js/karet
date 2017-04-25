@@ -75,6 +75,7 @@ const FromKefir = /*#__PURE__*/inherit(function FromKefir(props) {
     } else {
       this.rendered = observable || null
     }
+    this.at = 1
   },
   render() {
     return this.rendered
