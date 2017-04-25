@@ -31,12 +31,15 @@ const isObs = x => x instanceof Observable
 
 const LiftedComponent = /*#__PURE__*/inherit(function LiftedComponent(props) {
   Component.call(this, props)
+  this.at = 0
 }, Component, {
   componentWillReceiveProps(nextProps) {
     this.componentWillUnmount()
+    this.at = 0
     this.doSubscribe(nextProps)
   },
   componentWillMount() {
+    this.at = 0
     this.doSubscribe(this.props)
   }
 })
@@ -59,7 +62,7 @@ const FromKefir = /*#__PURE__*/inherit(function FromKefir(props) {
         switch (e.type) {
           case VALUE:
             this.rendered = e.value || null
-            this.forceUpdate()
+            this.at && this.forceUpdate()
             break
           case ERROR:
             throw e.value
@@ -82,18 +85,18 @@ export const fromKefir = observable => reactElement(FromKefir, {observable})
 
 //
 
-function renderChildren(children, at, values) {
+function renderChildren(children, self, values) {
   if (isObs(children)) {
-    return values[++at[0]]
+    return values[self.at++]
   } else if (isArray(children)) {
     let newChildren = children
     for (let i=0, n=children.length; i<n; ++i) {
       const childI = children[i]
       let newChildI = childI
       if (isObs(childI)) {
-        newChildI = values[++at[0]]
+        newChildI = values[self.at++]
       } else if (isArray(childI)) {
-        newChildI = renderChildren(childI, at, values)
+        newChildI = renderChildren(childI, self, values)
       }
       if (newChildI !== childI) {
         if (newChildren === children)
@@ -107,7 +110,7 @@ function renderChildren(children, at, values) {
   }
 }
 
-function renderStyle(style, at, values) {
+function renderStyle(style, self, values) {
   let newStyle = undefined
   for (const i in style) {
     const styleI = style[i]
@@ -120,7 +123,7 @@ function renderStyle(style, at, values) {
           newStyle[j] = style[j]
         }
       }
-      newStyle[i] = values[++at[0]]
+      newStyle[i] = values[self.at++]
     } else if (newStyle) {
       newStyle[i] = styleI
     }
@@ -128,28 +131,30 @@ function renderStyle(style, at, values) {
   return newStyle || style
 }
 
-function render(props, values) {
+function render(self, values) {
+  const props = self.props
+
   let type = null
   let newProps = null
   let newChildren = null
 
-  const at = [-1]
+  self.at = 0
 
   for (const key in props) {
     const val = props[key]
     if (CHILDREN === key) {
-      newChildren = renderChildren(val, at, values)
+      newChildren = renderChildren(val, self, values)
     } else if ("$$type" === key) {
       type = props[key]
     } else if (DD_REF === key) {
       newProps = newProps || {}
-      newProps.ref = isObs(val) ? values[++at[0]] : val
+      newProps.ref = isObs(val) ? values[self.at++] : val
     } else if (isObs(val)) {
       newProps = newProps || {}
-      newProps[key] = values[++at[0]]
+      newProps[key] = values[self.at++]
     } else if (STYLE === key) {
       newProps = newProps || {}
-      newProps.style = renderStyle(val, at, values) || val
+      newProps.style = renderStyle(val, self, values) || val
     } else {
       newProps = newProps || {}
       newProps[key] = val
@@ -215,7 +220,7 @@ function onAny(self, obs) {
         const values = self.values
         if (values[idx] !== value) {
           values[idx] = value
-          self.forceUpdate()
+          self.at && self.forceUpdate()
         }
         break
       }
@@ -260,13 +265,13 @@ const FromClass = /*#__PURE__*/inherit(function FromClass(props) {
         break
       case 1: {
         this.values = this
-        const handlers = e => {
+        forEachInProps(props, this.handlers = e => {
           switch (e.type) {
             case VALUE: {
               const value = e.value
               if (this.values !== value) {
                 this.values = value
-                this.forceUpdate()
+                this.at && this.forceUpdate()
               }
               break
             }
@@ -276,9 +281,7 @@ const FromClass = /*#__PURE__*/inherit(function FromClass(props) {
               this.handlers = null
             }
           }
-        }
-        this.handlers = handlers
-        forEachInProps(props, handlers, onAny1)
+        }, onAny1)
         break
       }
       default:
@@ -292,13 +295,13 @@ const FromClass = /*#__PURE__*/inherit(function FromClass(props) {
       const value = this.values
       if (value === this)
         return null
-      return render(this.props, [value])
+      return render(this, [value])
     } else {
       const values = this.values
       for (let i=0, n=values.length; i<n; ++i)
         if (values[i] === this)
           return null
-      return render(this.props, values)
+      return render(this, values)
     }
   }
 })
