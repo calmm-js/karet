@@ -26,14 +26,14 @@ const isObs = x => x instanceof Observable
 
 function renderChildren(children, self, values) {
   if (isObs(children)) {
-    return values[++self.at]
+    return values[self.at++]
   } else if (isArray(children)) {
     let newChildren = children
     for (let i=0, n=children.length; i<n; ++i) {
       const childI = children[i]
       let newChildI = childI
       if (isObs(childI)) {
-        newChildI = values[++self.at]
+        newChildI = values[self.at++]
       } else if (isArray(childI)) {
         newChildI = renderChildren(childI, self, values)
       }
@@ -62,7 +62,7 @@ function renderStyle(style, self, values) {
           newStyle[j] = style[j]
         }
       }
-      newStyle[i] = values[++self.at]
+      newStyle[i] = values[self.at++]
     } else if (newStyle) {
       newStyle[i] = styleI
     }
@@ -77,7 +77,7 @@ function render(toVDOM, self, values) {
   let newProps = null
   let newChildren = null
 
-  self.at = -1
+  self.at = 0
 
   for (const key in props) {
     const val = props[key]
@@ -87,10 +87,10 @@ function render(toVDOM, self, values) {
       type = props[key]
     } else if (DD_REF === key) {
       newProps = newProps || {}
-      newProps.ref = isObs(val) ? values[++self.at] : val
+      newProps.ref = isObs(val) ? values[self.at++] : val
     } else if (isObs(val)) {
       newProps = newProps || {}
-      newProps[key] = values[++self.at]
+      newProps[key] = values[self.at++]
     } else if (STYLE === key) {
       newProps = newProps || {}
       newProps.style = renderStyle(val, self, values) || val
@@ -99,8 +99,6 @@ function render(toVDOM, self, values) {
       newProps[key] = val
     }
   }
-
-  self.at = 0
 
   return newChildren instanceof Array
     ? toVDOM.apply(null, [type, newProps].concat(newChildren))
@@ -203,7 +201,7 @@ function onAny(self, obs) {
         const values = self.values
         if (values[idx] !== value) {
           values[idx] = value
-          self.at || self.forceUpdate()
+          self.at && self.forceUpdate()
         }
         break
       }
@@ -234,12 +232,12 @@ export default ({createElement: toVDOM, Component}) => {
   }, Component, {
     componentWillReceiveProps(nextProps) {
       this.componentWillUnmount()
+      this.at = 0
       this.doSubscribe(nextProps)
     },
     componentWillMount() {
-      this.at = 1
-      this.doSubscribe(this.props)
       this.at = 0
+      this.doSubscribe(this.props)
     }
   })
 
@@ -261,7 +259,7 @@ export default ({createElement: toVDOM, Component}) => {
           switch (e.type) {
             case VALUE:
               this.rendered = e.value || null
-              this.at || this.forceUpdate()
+              this.at && this.forceUpdate()
               break
             case ERROR:
               throw e.value
@@ -312,7 +310,7 @@ export default ({createElement: toVDOM, Component}) => {
                 const value = e.value
                 if (this.values !== value) {
                   this.values = value
-                  this.at || this.forceUpdate()
+                  this.at && this.forceUpdate()
                 }
                 break
               }
