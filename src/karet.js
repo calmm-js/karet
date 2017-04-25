@@ -270,6 +270,7 @@ export default ({createElement: toVDOM, Component}) => {
       } else {
         this.rendered = observable || null
       }
+      this.at = 1
     },
     render() {
       return this.rendered
