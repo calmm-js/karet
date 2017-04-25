@@ -28,13 +28,16 @@ export default ({createElement: vdomElement, Component}) => {
 
   const LiftedComponent = /*#__PURE__*/inherit(function LiftedComponent(props) {
     Component.call(this, props)
+    this.update = false
   }, Component, {
     componentWillReceiveProps(nextProps) {
       this.componentWillUnmount()
       this.doSubscribe(nextProps)
     },
     componentWillMount() {
+      this.update = false
       this.doSubscribe(this.props)
+      this.update = true
     }
   })
 
@@ -212,7 +215,8 @@ export default ({createElement: vdomElement, Component}) => {
           const values = self.values
           if (values[idx] !== value) {
             values[idx] = value
-            self.forceUpdate()
+            if (self.update)
+              self.forceUpdate()
           }
           break
         }
@@ -257,13 +261,14 @@ export default ({createElement: vdomElement, Component}) => {
           break
         case 1: {
           this.values = this
-          const handlers = e => {
+          forEachInProps(props, this.handlers = e => {
             switch (e.type) {
               case VALUE: {
                 const value = e.value
                 if (this.values !== value) {
                   this.values = value
-                  this.forceUpdate()
+                  if (this.update)
+                    this.forceUpdate()
                 }
                 break
               }
@@ -273,9 +278,7 @@ export default ({createElement: vdomElement, Component}) => {
                 this.handlers = null
               }
             }
-          }
-          this.handlers = handlers
-          forEachInProps(props, handlers, onAny1)
+          }, onAny1)
           break
         }
         default:
