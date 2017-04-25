@@ -75,6 +75,7 @@ var FromKefir = /*#__PURE__*/infestines.inherit(function FromKefir(props) {
     } else {
       this.rendered = observable || null;
     }
+    this.at = 1;
   },
   render: function render() {
     return this.rendered;
