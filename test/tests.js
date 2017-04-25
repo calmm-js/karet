@@ -72,6 +72,19 @@ describe("basics", () => {
                Hello {Kefir.constant("world!")}
              </Spread>,
              '<div>Hello world!</div>')
+
+  testRender(<div><div>a</div>{[<div>b</div>, [<div>c</div>, [<div>d</div>]]]}</div>,
+             '<div><div>a</div><div>b</div><div>c</div><div>d</div></div>')
+
+  testRender(<div><div>a</div>{[<div>b</div>, Kefir.constant([<div>c</div>, [<div>d</div>]])]}</div>,
+             '<div><div>a</div><div>b</div><div>c</div><div>d</div></div>')
+
+  const ChildrenWithSibling = ({children}) => <div>Test: {children}</div>
+
+  testRender(<ChildrenWithSibling>
+               Hello {Kefir.constant("world!")}
+             </ChildrenWithSibling>,
+             '<div>Test: Hello world!</div>')
 })
 
 describe("fromKefir", () => {
