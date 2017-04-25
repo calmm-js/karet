@@ -13,7 +13,7 @@ var ERROR = "error";
 var END = "end";
 var STYLE = "style";
 var CHILDREN = "children";
-var KARET_LIFT = "karet-lift";
+var LIFT = "karet-lift";
 var DD_REF = "$$ref";
 
 //
@@ -336,7 +336,7 @@ function filterProps(type, props) {
   var newProps = { "$$type": type };
   for (var key in props) {
     var val = props[key];
-    if ("ref" === key) newProps[DD_REF] = val;else if (KARET_LIFT !== key) newProps[key] = val;
+    if ("ref" === key) newProps[DD_REF] = val;else if (LIFT !== key) newProps[key] = val;
   }
   return newProps;
 }
@@ -348,12 +348,12 @@ function createElement$1() {
 
   var type = args[0];
   var props = args[1] || infestines.object0;
-  if (infestines.isString(type) || props[KARET_LIFT]) {
+  if (infestines.isString(type) || props[LIFT]) {
     if (hasObsInChildrenArray(2, args) || hasObsInProps(props)) {
       args[1] = filterProps(type, props);
       args[0] = FromClass;
-    } else if (props[KARET_LIFT]) {
-      args[1] = infestines.dissocPartialU(KARET_LIFT, props) || infestines.object0;
+    } else if (props[LIFT]) {
+      args[1] = infestines.dissocPartialU(LIFT, props) || infestines.object0;
     }
   }
   return reactElement.apply(undefined, args);
