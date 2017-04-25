@@ -29,12 +29,15 @@ var isObs = function isObs(x) {
 
 var LiftedComponent = /*#__PURE__*/infestines.inherit(function LiftedComponent(props) {
   Component$1.call(this, props);
+  this.at = 0;
 }, Component$1, {
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
     this.componentWillUnmount();
+    this.at = 0;
     this.doSubscribe(nextProps);
   },
   componentWillMount: function componentWillMount() {
+    this.at = 0;
     this.doSubscribe(this.props);
   }
 });
@@ -59,7 +62,7 @@ var FromKefir = /*#__PURE__*/infestines.inherit(function FromKefir(props) {
         switch (e.type) {
           case VALUE:
             _this.rendered = e.value || null;
-            _this.forceUpdate();
+            _this.at && _this.forceUpdate();
             break;
           case ERROR:
             throw e.value;
@@ -84,18 +87,18 @@ var fromKefir = function fromKefir(observable) {
 
 //
 
-function renderChildren(children, at, values) {
+function renderChildren(children, self, values) {
   if (isObs(children)) {
-    return values[++at[0]];
+    return values[self.at++];
   } else if (infestines.isArray(children)) {
     var newChildren = children;
     for (var i = 0, n = children.length; i < n; ++i) {
       var childI = children[i];
       var newChildI = childI;
       if (isObs(childI)) {
-        newChildI = values[++at[0]];
+        newChildI = values[self.at++];
       } else if (infestines.isArray(childI)) {
-        newChildI = renderChildren(childI, at, values);
+        newChildI = renderChildren(childI, self, values);
       }
       if (newChildI !== childI) {
         if (newChildren === children) newChildren = children.slice(0);
@@ -108,7 +111,7 @@ function renderChildren(children, at, values) {
   }
 }
 
-function renderStyle(style, at, values) {
+function renderStyle(style, self, values) {
   var newStyle = undefined;
   for (var i in style) {
     var styleI = style[i];
@@ -120,7 +123,7 @@ function renderStyle(style, at, values) {
           newStyle[j] = style[j];
         }
       }
-      newStyle[i] = values[++at[0]];
+      newStyle[i] = values[self.at++];
     } else if (newStyle) {
       newStyle[i] = styleI;
     }
@@ -128,28 +131,30 @@ function renderStyle(style, at, values) {
   return newStyle || style;
 }
 
-function _render(props, values) {
+function _render(self, values) {
+  var props = self.props;
+
   var type = null;
   var newProps = null;
   var newChildren = null;
 
-  var at = [-1];
+  self.at = 0;
 
   for (var key in props) {
     var val = props[key];
     if (CHILDREN === key) {
-      newChildren = renderChildren(val, at, values);
+      newChildren = renderChildren(val, self, values);
     } else if ("$$type" === key) {
       type = props[key];
     } else if (DD_REF === key) {
       newProps = newProps || {};
-      newProps.ref = isObs(val) ? values[++at[0]] : val;
+      newProps.ref = isObs(val) ? values[self.at++] : val;
     } else if (isObs(val)) {
       newProps = newProps || {};
-      newProps[key] = values[++at[0]];
+      newProps[key] = values[self.at++];
     } else if (STYLE === key) {
       newProps = newProps || {};
-      newProps.style = renderStyle(val, at, values) || val;
+      newProps.style = renderStyle(val, self, values) || val;
     } else {
       newProps = newProps || {};
       newProps[key] = val;
@@ -212,7 +217,7 @@ function onAny(self, obs) {
           var values = self.values;
           if (values[idx] !== value) {
             values[idx] = value;
-            self.forceUpdate();
+            self.at && self.forceUpdate();
           }
           break;
         }
@@ -260,14 +265,14 @@ var FromClass = /*#__PURE__*/infestines.inherit(function FromClass(props) {
       case 1:
         {
           this.values = this;
-          var handlers = function handlers(e) {
+          forEachInProps(props, this.handlers = function (e) {
             switch (e.type) {
               case VALUE:
                 {
                   var value = e.value;
                   if (_this2.values !== value) {
                     _this2.values = value;
-                    _this2.forceUpdate();
+                    _this2.at && _this2.forceUpdate();
                   }
                   break;
                 }
@@ -279,9 +284,7 @@ var FromClass = /*#__PURE__*/infestines.inherit(function FromClass(props) {
                   _this2.handlers = null;
                 }
             }
-          };
-          this.handlers = handlers;
-          forEachInProps(props, handlers, onAny1);
+          }, onAny1);
           break;
         }
       default:
@@ -294,12 +297,12 @@ var FromClass = /*#__PURE__*/infestines.inherit(function FromClass(props) {
     if (this.handlers instanceof Function) {
       var value = this.values;
       if (value === this) return null;
-      return _render(this.props, [value]);
+      return _render(this, [value]);
     } else {
       var values = this.values;
       for (var i = 0, n = values.length; i < n; ++i) {
         if (values[i] === this) return null;
-      }return _render(this.props, values);
+      }return _render(this, values);
     }
   }
 });
