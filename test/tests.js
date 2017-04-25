@@ -37,7 +37,10 @@ function show(x) {
   const React = Karet({createElement, Component})
 
   const testRender = (vdom, expect) => it(`${expect}`, () => {
-    const actual = renderToStaticMarkup(vdom)
+    const actual =
+      renderToStaticMarkup(vdom)
+      .replace(/: ([^;]*);/g, ":$1;") // <- React / Preact style rendering diffs
+      .replace(/; ([^:]*):/g, ";$1:") // <- React / Preact style rendering diffs
 
     if (actual !== expect)
       throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
