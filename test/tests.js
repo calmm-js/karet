@@ -80,15 +80,18 @@ function show(x) {
     testRender(<div>{Kefir.constant(1).merge(Kefir.later(1000,0))}</div>, "<div>1</div>")
     testRender(<div>{Kefir.later(1000,0)} {Kefir.constant(0)}</div>, "")
 
-    const Custom = ({prop, ...props}) => <div>{`${prop} ${JSON.stringify(props)}`}</div>
+    const Custom = ({prop, children: _, ...props}) =>
+      <div>{`${prop} ${JSON.stringify(props)}`}</div>
 
-    testRender(<Custom prop={Kefir.constant("not-lifted")} ref="test"/>,
+    const ref = title !== "Preact" ? {ref: "test"} : {}
+
+    testRender(<Custom prop={Kefir.constant("not-lifted")} {...ref}/>,
                '<div>[constant] {}</div>')
 
-    testRender(<Custom karet-lift prop={Kefir.constant("lifted")} ref="test"/>,
+    testRender(<Custom karet-lift prop={Kefir.constant("lifted")} {...ref}/>,
                '<div>lifted {}</div>')
 
-    testRender(<Custom karet-lift prop={"lifted anyway"} ref="test"/>,
+    testRender(<Custom karet-lift prop={"lifted anyway"} {...ref}/>,
                '<div>lifted anyway {}</div>')
 
     const Spread = props => <div {...props} />
