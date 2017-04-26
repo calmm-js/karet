@@ -1,8 +1,6 @@
-import * as React from "react"
 import {Observable} from "kefir"
 import {
   array0,
-  assocPartialU,
   dissocPartialU,
   inherit,
   isArray,
@@ -17,72 +15,16 @@ const ERROR = "error"
 const END = "end"
 const STYLE = "style"
 const CHILDREN = "children"
+const DD_CHILDREN = "$$children"
+const DD_CHILDS = "$$childs"
+const DD_CHILDS_ONLY = "$$childs_only"
 const LIFT = "karet-lift"
 const DD_REF = "$$ref"
+const DD_TYPE = "$$type"
 
 //
-
-const reactElement = React.createElement
-const Component = React.Component
 
 const isObs = x => x instanceof Observable
-
-//
-
-const LiftedComponent = /*#__PURE__*/inherit(function LiftedComponent(props) {
-  Component.call(this, props)
-  this.at = 0
-}, Component, {
-  componentWillReceiveProps(nextProps) {
-    this.componentWillUnmount()
-    this.at = 0
-    this.doSubscribe(nextProps)
-  },
-  componentWillMount() {
-    this.at = 0
-    this.doSubscribe(this.props)
-  }
-})
-
-//
-
-const FromKefir = /*#__PURE__*/inherit(function FromKefir(props) {
-  LiftedComponent.call(this, props)
-  this.callback =
-  this.rendered = null
-}, LiftedComponent, {
-  componentWillUnmount() {
-    const callback = this.callback
-    if (callback)
-      this.props.observable.offAny(callback)
-  },
-  doSubscribe({observable}) {
-    if (isObs(observable)) {
-      const callback = e => {
-        switch (e.type) {
-          case VALUE:
-            this.rendered = e.value || null
-            this.at && this.forceUpdate()
-            break
-          case ERROR:
-            throw e.value
-          case END:
-            this.callback = null
-        }
-      }
-      this.callback = callback
-      observable.onAny(callback)
-    } else {
-      this.rendered = observable || null
-    }
-    this.at = 1
-  },
-  render() {
-    return this.rendered
-  }
-})
-
-export const fromKefir = observable => reactElement(FromKefir, {observable})
 
 //
 
@@ -132,41 +74,57 @@ function renderStyle(style, self, values) {
   return newStyle || style
 }
 
-function render(self, values) {
+function render(toVDOM, self, values) {
   const props = self.props
 
   let type = null
   let newProps = null
-  let newChildren = null
+  let newChilds = null
+
+  let childsOnly = false
 
   self.at = 0
 
   for (const key in props) {
     const val = props[key]
-    if (CHILDREN === key) {
-      newChildren = renderChildren(val, self, values)
-    } else if ("$$type" === key) {
+    if (DD_TYPE === key) {
       type = props[key]
     } else if (DD_REF === key) {
       newProps = newProps || {}
       newProps.ref = isObs(val) ? values[self.at++] : val
-    } else if (isObs(val)) {
+    } else if (DD_CHILDS_ONLY == key) {
+      childsOnly = true
+    } else if (DD_CHILDREN === key) {
       newProps = newProps || {}
-      newProps[key] = values[self.at++]
-    } else if (STYLE === key) {
-      newProps = newProps || {}
-      newProps.style = renderStyle(val, self, values) || val
+      newProps[CHILDREN] = renderChildren(val, self, values)
+    } else if (DD_CHILDS === key) {
+      newChilds = renderChildren(val, self, values)
     } else {
-      newProps = newProps || {}
-      newProps[key] = val
+      if (childsOnly) {
+        if (CHILDREN !== key) {
+          newProps = newProps || {}
+          newProps[key] = val
+        }
+      } else {
+        if (isObs(val)) {
+          newProps = newProps || {}
+          newProps[key] = values[self.at++]
+        } else if (STYLE === key) {
+          newProps = newProps || {}
+          newProps.style = renderStyle(val, self, values) || val
+        } else if (CHILDREN !== key) {
+          newProps = newProps || {}
+          newProps[key] = val
+        }
+      }
     }
   }
 
-  return newChildren instanceof Array
-    ? reactElement.apply(null, [type, newProps].concat(newChildren))
-    : newChildren
-    ? reactElement(type, newProps, newChildren)
-    : reactElement(type, newProps)
+  return newChilds instanceof Array
+    ? toVDOM.apply(null, [type, newProps].concat(newChilds))
+    : newChilds
+    ? toVDOM(type, newProps, newChilds)
+    : toVDOM(type, newProps)
 }
 
 //
@@ -186,7 +144,7 @@ function forEachInProps(props, extra, fn) {
     const val = props[key]
     if (isObs(val)) {
       fn(extra, val)
-    } else if (CHILDREN === key) {
+    } else if (DD_CHILDREN === key || DD_CHILDS === key) {
       if (isArray(val))
         forEachInChildrenArray(val, extra, fn)
     } else if (STYLE === key) {
@@ -197,6 +155,50 @@ function forEachInProps(props, extra, fn) {
       }
     }
   }
+}
+
+//
+
+function hasObsInChildrenArray(i, children) {
+  for (const n = children.length; i < n; ++i) {
+    const child = children[i]
+    if (isObs(child) || isArray(child) && hasObsInChildrenArray(0, child))
+      return true
+  }
+  return false
+}
+
+function hasObsInProps(props) {
+  for (const key in props) {
+    const val = props[key]
+    if (isObs(val)) {
+      return true
+    } else if (CHILDREN === key) {
+      if (isArray(val) && hasObsInChildrenArray(0, val))
+        return true
+    } else if (STYLE === key) {
+      for (const k in val)
+        if (isObs(val[k]))
+          return true
+    }
+  }
+  return false
+}
+
+//
+
+function filterPropsTo(newProps, type, props) {
+  newProps[DD_TYPE] = type
+  for (const key in props) {
+    const val = props[key]
+    if ("ref" === key)
+      newProps[DD_REF] = val
+    else if (CHILDREN === key)
+      newProps[DD_CHILDREN] = val
+    else if (LIFT !== key)
+      newProps[key] = val
+  }
+  return newProps
 }
 
 //
@@ -242,134 +244,159 @@ function onAny(self, obs) {
   obs.onAny(handler)
 }
 
-const FromClass = /*#__PURE__*/inherit(function FromClass(props) {
-  LiftedComponent.call(this, props)
-  this.values = this
-  this.handlers = null
-}, LiftedComponent, {
-  componentWillUnmount() {
-    const handlers = this.handlers
-    if (handlers instanceof Function) {
-      forEachInProps(this.props, handlers, offAny1)
-    } else if (handlers) {
-      forEachInProps(this.props, handlers.reverse(), offAny)
-    }
-  },
-  doSubscribe(props) {
-    this.values = 0
-    forEachInProps(props, this, incValues)
-    const n = this.values
-
-    switch (n) {
-      case 0:
-        this.values = array0
-        break
-      case 1: {
-        this.values = this
-        forEachInProps(props, this.handlers = e => {
-          switch (e.type) {
-            case VALUE: {
-              const value = e.value
-              if (this.values !== value) {
-                this.values = value
-                this.at && this.forceUpdate()
-              }
-              break
-            }
-            case ERROR: throw e.value
-            default: {
-              this.values = [this.values]
-              this.handlers = null
-            }
-          }
-        }, onAny1)
-        break
-      }
-      default:
-        this.values = Array(n).fill(this)
-        this.handlers = []
-        forEachInProps(props, this, onAny)
-    }
-  },
-  render() {
-    if (this.handlers instanceof Function) {
-      const value = this.values
-      if (value === this)
-        return null
-      return render(this, [value])
-    } else {
-      const values = this.values
-      for (let i=0, n=values.length; i<n; ++i)
-        if (values[i] === this)
-          return null
-      return render(this, values)
-    }
-  }
-})
-
 //
 
-function hasObsInChildrenArray(i, children) {
-  for (const n = children.length; i < n; ++i) {
-    const child = children[i]
-    if (isObs(child) || isArray(child) && hasObsInChildrenArray(0, child))
-      return true
-  }
-  return false
-}
+export default ({createElement: toVDOM, Component}) => {
 
-function hasObsInProps(props) {
-  for (const key in props) {
-    const val = props[key]
-    if (isObs(val)) {
-      return true
-    } else if (CHILDREN === key) {
-      if (isArray(val) && hasObsInChildrenArray(0, val))
-        return true
-    } else if (STYLE === key) {
-      for (const k in val)
-        if (isObs(val[k]))
-          return true
+  const LiftedComponent = /*#__PURE__*/inherit(function LiftedComponent(props) {
+    Component.call(this, props)
+    this.at = 0
+  }, Component, {
+    componentWillReceiveProps(nextProps) {
+      this.componentWillUnmount()
+      this.at = 0
+      this.doSubscribe(nextProps)
+    },
+    componentWillMount() {
+      this.at = 0
+      this.doSubscribe(this.props)
     }
-  }
-  return false
-}
-
-//
-
-function filterProps(type, props) {
-  const newProps = {"$$type": type}
-  for (const key in props) {
-    const val = props[key]
-    if ("ref" === key)
-      newProps[DD_REF] = val
-    else if (LIFT !== key)
-      newProps[key] = val
-  }
-  return newProps
-}
-
-function createElement(...args) {
-  const type = args[0]
-  const props = args[1] || object0
-  if (isString(type) || props[LIFT]) {
-    if (hasObsInChildrenArray(2, args) || hasObsInProps(props)) {
-      args[1] = filterProps(type, props)
-      args[0] = FromClass
-    } else if (props[LIFT]) {
-      args[1] = dissocPartialU(LIFT, props) || object0
-    }
-  }
-  return reactElement(...args)
-}
-
-export default process.env.NODE_ENV === "production"
-  ? assocPartialU("createElement", createElement, React)
-  : Object.defineProperty(assocPartialU("createElement", createElement, dissocPartialU("PropTypes", React)), "PropTypes", {
-    get: (React => () => React.PropTypes)(React)
   })
 
-//
+  //
 
-export const fromClass = Class => props =>
-  reactElement(FromClass, filterProps(Class, props))
+  const FromKefir = /*#__PURE__*/inherit(function FromKefir(props) {
+    LiftedComponent.call(this, props)
+    this.callback =
+      this.rendered = null
+  }, LiftedComponent, {
+    componentWillUnmount() {
+      const callback = this.callback
+      if (callback)
+        this.props.observable.offAny(callback)
+    },
+    doSubscribe({observable}) {
+      if (isObs(observable)) {
+        observable.onAny(this.callback = e => {
+          switch (e.type) {
+            case VALUE:
+              this.rendered = e.value || null
+              this.at && this.forceUpdate()
+              break
+            case ERROR:
+              throw e.value
+            case END:
+              this.callback = null
+          }
+        })
+      } else {
+        this.rendered = observable || null
+      }
+      this.at = 1
+    },
+    render() {
+      return this.rendered
+    }
+  })
+
+  const fromKefir = observable => toVDOM(FromKefir, {observable})
+
+  //
+
+  const FromClass = /*#__PURE__*/inherit(function FromClass(props) {
+    LiftedComponent.call(this, props)
+    this.values = this
+    this.handlers = null
+  }, LiftedComponent, {
+    componentWillUnmount() {
+      const handlers = this.handlers
+      if (handlers instanceof Function) {
+        forEachInProps(this.props, handlers, offAny1)
+      } else if (handlers) {
+        forEachInProps(this.props, handlers.reverse(), offAny)
+      }
+    },
+    doSubscribe(props) {
+      this.values = 0
+      forEachInProps(props, this, incValues)
+      const n = this.values
+
+      switch (n) {
+        case 0:
+          this.values = array0
+          break
+        case 1: {
+          this.values = this
+          forEachInProps(props, this.handlers = e => {
+            switch (e.type) {
+              case VALUE: {
+                const value = e.value
+                if (this.values !== value) {
+                  this.values = value
+                  this.at && this.forceUpdate()
+                }
+                break
+              }
+              case ERROR: throw e.value
+              default: {
+                this.values = [this.values]
+                this.handlers = null
+              }
+            }
+          }, onAny1)
+          break
+        }
+        default:
+          this.values = Array(n).fill(this)
+          this.handlers = []
+          forEachInProps(props, this, onAny)
+      }
+    },
+    render() {
+      if (this.handlers instanceof Function) {
+        const value = this.values
+        if (value === this)
+          return null
+        return render(toVDOM, this, [value])
+      } else {
+        const values = this.values
+        for (let i=0, n=values.length; i<n; ++i)
+          if (values[i] === this)
+            return null
+        return render(toVDOM, this, values)
+      }
+    }
+  })
+
+  //
+
+  function createElement(...args) {
+    const type = args[0]
+    const props = args[1] || object0
+    if (isString(type) || props[LIFT]) {
+      if (hasObsInChildrenArray(2, args) || hasObsInProps(props)) {
+        const newProps = filterPropsTo({}, type, props)
+        if (3 <= args.length)
+          newProps[DD_CHILDS] = args.slice(2)
+        return toVDOM(FromClass, newProps)
+      } else if (props[LIFT]) {
+        args[1] = dissocPartialU(LIFT, props) || object0
+      }
+    } else if (hasObsInChildrenArray(2, args) /* XXX Also children prop */) {
+      const newProps = {}
+      newProps[DD_CHILDS_ONLY] = 1
+      filterPropsTo(newProps, type, props)
+      if (3 <= args.length)
+        newProps[DD_CHILDS] = args.slice(2)
+      return toVDOM(FromClass, newProps)
+    }
+    return toVDOM(...args)
+  }
+
+  //
+
+  const fromClass = Class => props =>
+    toVDOM(FromClass, filterPropsTo({}, Class, props))
+
+  return {createElement, fromKefir, fromClass}
+}
