@@ -150,7 +150,7 @@ function show(x) {
       Bottom.contextTypes = {message: PropTypes.any}
 
     const Middle = () => <div>{Kefir.constant("Middle")} <Bottom/></div>
-      const Top = () => <div>{Kefir.constant("Top")} <Middle/></div>
+    const Top = () => <div>{Kefir.constant("Top")} <Middle/></div>
 
     testRender(<Context context={{message: Kefir.constant("Hello")}}><Top/></Context>,
                "<div><div>Top <div>Middle <div>Bottom Hello</div></div></div></div>")
