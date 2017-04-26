@@ -15,8 +15,12 @@ const ERROR = "error"
 const END = "end"
 const STYLE = "style"
 const CHILDREN = "children"
+const DD_CHILDREN = "$$children"
+const DD_CHILDS = "$$childs"
+const DD_CHILDS_ONLY = "$$childs_only"
 const LIFT = "karet-lift"
 const DD_REF = "$$ref"
+const DD_TYPE = "$$type"
 
 //
 
@@ -75,35 +79,51 @@ function render(toVDOM, self, values) {
 
   let type = null
   let newProps = null
-  let newChildren = null
+  let newChilds = null
+
+  let childsOnly = false
 
   self.at = 0
 
   for (const key in props) {
     const val = props[key]
-    if (CHILDREN === key) {
-      newChildren = renderChildren(val, self, values)
-    } else if ("$$type" === key) {
+    if (DD_TYPE === key) {
       type = props[key]
     } else if (DD_REF === key) {
       newProps = newProps || {}
       newProps.ref = isObs(val) ? values[self.at++] : val
-    } else if (isObs(val)) {
+    } else if (DD_CHILDS_ONLY == key) {
+      childsOnly = true
+    } else if (DD_CHILDREN === key) {
       newProps = newProps || {}
-      newProps[key] = values[self.at++]
-    } else if (STYLE === key) {
-      newProps = newProps || {}
-      newProps.style = renderStyle(val, self, values) || val
+      newProps[CHILDREN] = renderChildren(val, self, values)
+    } else if (DD_CHILDS === key) {
+      newChilds = renderChildren(val, self, values)
     } else {
-      newProps = newProps || {}
-      newProps[key] = val
+      if (childsOnly) {
+        if (CHILDREN !== key) {
+          newProps = newProps || {}
+          newProps[key] = val
+        }
+      } else {
+        if (isObs(val)) {
+          newProps = newProps || {}
+          newProps[key] = values[self.at++]
+        } else if (STYLE === key) {
+          newProps = newProps || {}
+          newProps.style = renderStyle(val, self, values) || val
+        } else if (CHILDREN !== key) {
+          newProps = newProps || {}
+          newProps[key] = val
+        }
+      }
     }
   }
 
-  return newChildren instanceof Array
-    ? toVDOM.apply(null, [type, newProps].concat(newChildren))
-    : newChildren
-    ? toVDOM(type, newProps, newChildren)
+  return newChilds instanceof Array
+    ? toVDOM.apply(null, [type, newProps].concat(newChilds))
+    : newChilds
+    ? toVDOM(type, newProps, newChilds)
     : toVDOM(type, newProps)
 }
 
@@ -124,7 +144,7 @@ function forEachInProps(props, extra, fn) {
     const val = props[key]
     if (isObs(val)) {
       fn(extra, val)
-    } else if (CHILDREN === key) {
+    } else if (DD_CHILDREN === key || DD_CHILDS === key) {
       if (isArray(val))
         forEachInChildrenArray(val, extra, fn)
     } else if (STYLE === key) {
@@ -167,12 +187,14 @@ function hasObsInProps(props) {
 
 //
 
-function filterProps(type, props) {
-  const newProps = {"$$type": type}
+function filterPropsTo(newProps, type, props) {
+  newProps[DD_TYPE] = type
   for (const key in props) {
     const val = props[key]
     if ("ref" === key)
       newProps[DD_REF] = val
+    else if (CHILDREN === key)
+      newProps[DD_CHILDREN] = val
     else if (LIFT !== key)
       newProps[key] = val
   }
@@ -353,11 +375,20 @@ export default ({createElement: toVDOM, Component}) => {
     const props = args[1] || object0
     if (isString(type) || props[LIFT]) {
       if (hasObsInChildrenArray(2, args) || hasObsInProps(props)) {
-        args[1] = filterProps(type, props)
-        args[0] = FromClass
+        const newProps = filterPropsTo({}, type, props)
+        if (3 <= args.length)
+          newProps[DD_CHILDS] = args.slice(2)
+        return toVDOM(FromClass, newProps)
       } else if (props[LIFT]) {
         args[1] = dissocPartialU(LIFT, props) || object0
       }
+    } else if (hasObsInChildrenArray(2, args) /* XXX Also children prop */) {
+      const newProps = {}
+      newProps[DD_CHILDS_ONLY] = 1
+      filterPropsTo(newProps, type, props)
+      if (3 <= args.length)
+        newProps[DD_CHILDS] = args.slice(2)
+      return toVDOM(FromClass, newProps)
     }
     return toVDOM(...args)
   }
@@ -365,7 +396,7 @@ export default ({createElement: toVDOM, Component}) => {
   //
 
   const fromClass = Class => props =>
-    toVDOM(FromClass, filterProps(Class, props))
+    toVDOM(FromClass, filterPropsTo({}, Class, props))
 
   return {createElement, fromKefir, fromClass}
 }

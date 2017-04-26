@@ -6,6 +6,10 @@ import * as ReactDOM from "react-dom/server"
 import * as Preact from "preact"
 import preactToString from "preact-render-to-string"
 
+import I_Component from "inferno-component"
+import I_createElement from "inferno-create-element"
+import InfernoServer from "inferno-server"
+
 import PropTypes from "prop-types"
 
 import Karet from "../dist/karet.cjs"
@@ -26,8 +30,12 @@ function show(x) {
     createElement: React.createElement,
     Component: React.Component,
     renderToStaticMarkup: ReactDOM.renderToStaticMarkup
-  },
-  {
+  }, {
+    title: "Inferno",
+    createElement: I_createElement,
+    Component: I_Component,
+    renderToStaticMarkup: InfernoServer.renderToString
+  }, {
     title: "Preact",
     createElement: Preact.createElement,
     Component: Preact.Component,
