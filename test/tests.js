@@ -36,33 +36,34 @@ function show(x) {
 ].forEach(({title, createElement, Component, renderToStaticMarkup}) => {
   const React = Karet({createElement, Component})
 
-  const testRender = (vdom, expect) => it(`${expect}`, () => {
+  const testRender = (getVDOM, expect) => it(`${expect}`, () => {
     const actual =
-      renderToStaticMarkup(vdom)
-      .replace(/: ([^;]*);/g, ":$1;") // <- React / Preact style rendering diffs
-      .replace(/; ([^:]*):/g, ";$1:") // <- React / Preact style rendering diffs
+      renderToStaticMarkup(getVDOM())
+      .replace(/: ([^;]*);/g, ":$1;") // <- Preact
+      .replace(/; ([^:]*):/g, ";$1:") // <- Preact
+      .replace(/<!--[^-]*-->/g, "")   // <- Inferno
 
     if (actual !== expect)
       throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
   })
 
   describe(`${title} basics`, () => {
-    testRender(<p key="k" ref={() => {}}>Hello</p>,
+    testRender(() => <p key="k" ref={() => {}}>Hello</p>,
                '<p>Hello</p>')
 
-    testRender(<p id={Kefir.constant("test")}>{null}</p>,
+    testRender(() => <p id={Kefir.constant("test")}>{null}</p>,
                '<p id="test"></p>')
 
-    testRender(<p key="k" ref={() => {}}>{Kefir.constant("Hello")}</p>,
+    testRender(() => <p key="k" ref={() => {}}>{Kefir.constant("Hello")}</p>,
                '<p>Hello</p>')
 
-    testRender(<p>{[Kefir.constant("Hello")]}</p>,
+    testRender(() => <p>{[Kefir.constant("Hello")]}</p>,
                '<p>Hello</p>')
 
-    testRender(<p>Just testing <span>constants</span>.</p>,
+    testRender(() => <p>Just testing <span>constants</span>.</p>,
                '<p>Just testing <span>constants</span>.</p>')
 
-    testRender(<div onClick={() => {}}
+    testRender(() => <div onClick={() => {}}
                style={{display: "block",
                        color: Kefir.constant("red"),
                        background: "green"}}>
@@ -71,65 +72,63 @@ function show(x) {
                </div>,
                '<div style="display:block;color:red;background:green;"><p>Hello</p><p>World</p></div>')
 
-    testRender(<a href="#lol" style={Kefir.constant({color: "red"})}>
+    testRender(() => <a href="#lol" style={Kefir.constant({color: "red"})}>
                {Kefir.constant("Hello")} {Kefir.constant("world!")}
                </a>,
                '<a href="#lol" style="color:red;">Hello world!</a>')
 
-    testRender(<div>{Kefir.later(1000,0)}</div>, "")
-    testRender(<div>{Kefir.constant(1).merge(Kefir.later(1000,0))}</div>, "<div>1</div>")
-    testRender(<div>{Kefir.later(1000,0)} {Kefir.constant(0)}</div>, "")
+    testRender(() => <div>{Kefir.later(1000,0)}</div>, "")
+    testRender(() => <div>{Kefir.constant(1).merge(Kefir.later(1000,0))}</div>, "<div>1</div>")
+    testRender(() => <div>{Kefir.later(1000,0)} {Kefir.constant(0)}</div>, "")
 
     const Custom = ({prop, children: _, ...props}) =>
       <div>{`${prop} ${JSON.stringify(props)}`}</div>
 
     const ref = title !== "Preact" ? {ref: "test"} : {}
 
-    testRender(<Custom prop={Kefir.constant("not-lifted")} {...ref}/>,
+    testRender(() => <Custom prop={Kefir.constant("not-lifted")} {...ref}/>,
                '<div>[constant] {}</div>')
 
-    testRender(<Custom karet-lift prop={Kefir.constant("lifted")} {...ref}/>,
+    testRender(() => <Custom karet-lift prop={Kefir.constant("lifted")} {...ref}/>,
                '<div>lifted {}</div>')
 
-    testRender(<Custom karet-lift prop={"lifted anyway"} {...ref}/>,
+    testRender(() => <Custom karet-lift prop={"lifted anyway"} {...ref}/>,
                '<div>lifted anyway {}</div>')
 
     const Spread = props => <div {...props} />
 
-    testRender(<Spread>
-               Hello {Kefir.constant("world!")}
-               </Spread>,
+    testRender(() => <Spread>Hello {Kefir.constant("world!")}</Spread>,
                '<div>Hello world!</div>')
 
-    testRender(<div><div>a</div>{[<div key="b">b</div>, [<div key="c">c</div>, [<div key="d">d</div>]]]}</div>,
+    testRender(() => <div><div>a</div>{[<div key="b">b</div>, [<div key="c">c</div>, [<div key="d">d</div>]]]}</div>,
                '<div><div>a</div><div>b</div><div>c</div><div>d</div></div>')
 
-    testRender(<div><div>a</div>{[<div key="b">b</div>, Kefir.constant([<div key="c">c</div>, [<div key="d">d</div>]])]}</div>,
+    testRender(() => <div><div>a</div>{[<div key="b">b</div>, Kefir.constant([<div key="c">c</div>, [<div key="d">d</div>]])]}</div>,
                '<div><div>a</div><div>b</div><div>c</div><div>d</div></div>')
 
     const ChildrenWithSibling = ({children}) => <div>Test: {children}</div>
 
-    testRender(<ChildrenWithSibling>
+    testRender(() => <ChildrenWithSibling>
                Hello {Kefir.constant("world!")}
                </ChildrenWithSibling>,
                '<div>Test: Hello world!</div>')
   })
 
   describe(`${title} fromKefir`, () => {
-    testRender(React.fromKefir(Kefir.constant(<p>Yes</p>)), '<p>Yes</p>')
+    testRender(() => React.fromKefir(Kefir.constant(<p>Yes</p>)), '<p>Yes</p>')
   })
 
   describe(`${title} fromClass`, () => {
     const P = React.fromClass("p")
-    testRender(<P $$ref={() => {}}>Hello</P>, '<p>Hello</p>')
+    testRender(() => <P $$ref={() => {}}>Hello</P>, '<p>Hello</p>')
 
-    testRender(<P>Hello, {"world"}!</P>, '<p>Hello, world!</p>')
-    testRender(<P ref={() => {}}>Hello, {Kefir.constant("world")}!</P>, '<p>Hello, world!</p>')
+    testRender(() => <P>Hello, {"world"}!</P>, '<p>Hello, world!</p>')
+    testRender(() => <P ref={() => {}}>Hello, {Kefir.constant("world")}!</P>, '<p>Hello, world!</p>')
 
-    testRender(<P>{[Kefir.constant("Hello")]}</P>,
+    testRender(() => <P>{[Kefir.constant("Hello")]}</P>,
                '<p>Hello</p>')
 
-    testRender(<P>{Kefir.later(1000,0)}</P>, "")
+    testRender(() => <P>{Kefir.later(1000,0)}</P>, "")
   })
 
   describe(`${title} context`, () => {
@@ -152,7 +151,7 @@ function show(x) {
     const Middle = () => <div>{Kefir.constant("Middle")} <Bottom/></div>
     const Top = () => <div>{Kefir.constant("Top")} <Middle/></div>
 
-    testRender(<Context context={{message: Kefir.constant("Hello")}}><Top/></Context>,
+    testRender(() => <Context context={{message: Kefir.constant("Hello")}}><Top/></Context>,
                "<div><div>Top <div>Middle <div>Bottom Hello</div></div></div></div>")
   })
 })
