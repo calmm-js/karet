@@ -25,18 +25,22 @@ var isObs = function isObs(x) {
 
 //
 
+function doSubscribe(self, props) {
+  self.at = 0;
+  self.doSubscribe(props);
+  self.at = 1;
+}
+
 var LiftedComponent = /*#__PURE__*/infestines.inherit(function LiftedComponent(props) {
   Component$1.call(this, props);
   this.at = 0;
 }, Component$1, {
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
     this.componentWillUnmount();
-    this.at = 0;
-    this.doSubscribe(nextProps);
+    doSubscribe(self, nextProps);
   },
   componentWillMount: function componentWillMount() {
-    this.at = 0;
-    this.doSubscribe(this.props);
+    doSubscribe(this, this.props);
   }
 });
 
