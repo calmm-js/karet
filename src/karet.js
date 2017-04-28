@@ -29,18 +29,22 @@ const isObs = x => x instanceof Observable
 
 //
 
+function doSubscribe(self, props) {
+  self.at = 0
+  self.doSubscribe(props)
+  self.at = 1
+}
+
 const LiftedComponent = /*#__PURE__*/inherit(function LiftedComponent(props) {
   Component.call(this, props)
   this.at = 0
 }, Component, {
   componentWillReceiveProps(nextProps) {
     this.componentWillUnmount()
-    this.at = 0
-    this.doSubscribe(nextProps)
+    doSubscribe(self, nextProps)
   },
   componentWillMount() {
-    this.at = 0
-    this.doSubscribe(this.props)
+    doSubscribe(this, this.props)
   }
 })
 
