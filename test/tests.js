@@ -1,6 +1,7 @@
 import * as Kefir from "kefir"
 
-import React, {fromClass, fromKefir} from "../dist/karet.cjs"
+import * as React from "../dist/karet.cjs"
+import {Component} from "react"
 import ReactDOM from "react-dom/server"
 import PropTypes from "prop-types"
 
@@ -88,11 +89,11 @@ describe("basics", () => {
 })
 
 describe("fromKefir", () => {
-  testRender(fromKefir(Kefir.constant(<p>Yes</p>)), '<p>Yes</p>')
+  testRender(React.fromKefir(Kefir.constant(<p>Yes</p>)), '<p>Yes</p>')
 })
 
 describe("fromClass", () => {
-  const P = fromClass("p")
+  const P = React.fromClass("p")
   testRender(<P $$ref={() => {}}>Hello</P>, '<p>Hello</p>')
 
   testRender(<P>Hello, {"world"}!</P>, '<p>Hello, world!</p>')
@@ -105,7 +106,7 @@ describe("fromClass", () => {
 })
 
 describe("context", () => {
-  class Context extends React.Component {
+  class Context extends Component {
     constructor(props) {
       super(props)
     }
