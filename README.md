@@ -22,8 +22,8 @@ observables into VDOM has the following benefits:
     are pushed through observables.  An update to a deeply nested VDOM element
     can be an O(1) operation.
 
-Using Karet couldn't be simpler.  You just `import React from "karet"` and you
-are good to go.
+Using Karet couldn't be simpler.  You just `import * as React from "karet"` and
+you are good to go.
 
 [![npm version](https://badge.fury.io/js/karet.svg)](http://badge.fury.io/js/karet)
 [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat)
@@ -46,7 +46,7 @@ are good to go.
 To use Karet, you simply import it as `React`:
 
 ```jsx
-import React from "karet"
+import * as React from "karet"
 ```
 
 and you can then write React components:
@@ -61,7 +61,12 @@ const Clock = () =>
 ```
 
 with VDOM that can have embedded [Kefir](http://rpominov.github.io/kefir/)
-observables.
+observables.  This works because Karet exports an enhanced version of
+`createElement`.
+
+**NOTE:** Karet does not pass through other named React exports.  Only
+`createElement` is exported, which is all that is needed for basic use of VDOM
+or the Babel JSX transform.
 
 **NOTE:** The result, like the `Clock` above, is *just* a React component.  If
 you export it, you can use it just like any other React component and even in
@@ -77,8 +82,8 @@ on a non-primitive element instructs Karet to lift the element.
 For example, you could write:
 
 ```jsx
-import * as RR from "react-router"
-import React   from "karet"
+import * as RR    from "react-router"
+import * as React from "karet"
 
 const Link1 = ({...props}) => <RR.Link karet-lift {...props}/>
 ```

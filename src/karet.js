@@ -353,7 +353,7 @@ function filterProps(type, props) {
   return newProps
 }
 
-function createElement(...args) {
+export function createElement(...args) {
   const type = args[0]
   const props = args[1] || object0
   if (isString(type) || props[LIFT]) {
@@ -368,8 +368,8 @@ function createElement(...args) {
 }
 
 export default process.env.NODE_ENV === "production"
-  ? assocPartialU("createElement", createElement, React)
-  : Object.defineProperty(assocPartialU("createElement", createElement, dissocPartialU("PropTypes", React)), "PropTypes", {
+  ? /*#__PURE__*/assocPartialU("createElement", createElement, React)
+  : /*#__PURE__*/Object.defineProperty(assocPartialU("createElement", createElement, dissocPartialU("PropTypes", React)), "PropTypes", {
     get: (React => () => React.PropTypes)(React)
   })
 
