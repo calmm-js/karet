@@ -11,7 +11,7 @@
     "dist:umd": "    NODE_ENV=dev        rollup -c -n karet -i src/karet.js -f umd -o dist/karet.js",
     "dist:umd.min": "NODE_ENV=production rollup -c -n karet -i src/karet.js -f umd -o dist/karet.min.js",
     "lint": "eslint src test",
-    "prepublish": "npm run lint && npm run dist && npm run test",
+    "prepare": "npm run lint && npm run dist && npm run test",
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
     "test": "nyc mocha"
   },
