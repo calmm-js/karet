@@ -64,9 +64,9 @@ with VDOM that can have embedded [Kefir](http://rpominov.github.io/kefir/)
 observables.  This works because Karet exports an enhanced version of
 `createElement`.
 
-**NOTE:** Karet does not export other named React functions.  Only React
-lookalike `createElement` is exported, which is all that is needed for basic use
-of JSX.
+**NOTE:** Karet does not pass through other named React exports.  Only
+`createElement` is exported, which is all that is needed for basic use of VDOM
+or the Babel JSX transform.
 
 **NOTE:** The result, like the `Clock` above, is *just* a React component.  If
 you export it, you can use it just like any other React component and even in
