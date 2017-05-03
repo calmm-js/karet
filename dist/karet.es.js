@@ -364,7 +364,7 @@ function createElement$1() {
   return reactElement.apply(undefined, args);
 }
 
-var karet = process.env.NODE_ENV === "production" ? assocPartialU("createElement", createElement$1, React) : Object.defineProperty(assocPartialU("createElement", createElement$1, dissocPartialU("PropTypes", React)), "PropTypes", {
+var karet = process.env.NODE_ENV === "production" ? /*#__PURE__*/assocPartialU("createElement", createElement$1, React) : /*#__PURE__*/Object.defineProperty(assocPartialU("createElement", createElement$1, dissocPartialU("PropTypes", React)), "PropTypes", {
   get: function (React$$1) {
     return function () {
       return React$$1.PropTypes;
@@ -380,4 +380,4 @@ var fromClass = function fromClass(Class) {
   };
 };
 
-export { fromKefir, fromClass };export default karet;
+export { fromKefir, createElement$1 as createElement, fromClass };export default karet;

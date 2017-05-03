@@ -382,6 +382,7 @@ var fromClass = function fromClass(Class) {
 };
 
 exports.fromKefir = fromKefir;
+exports.createElement = createElement$1;
 exports['default'] = karet;
 exports.fromClass = fromClass;
 
