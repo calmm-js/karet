@@ -36,7 +36,7 @@ var LiftedComponent = /*#__PURE__*/inherit(function LiftedComponent(props) {
 }, Component$1, {
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
     this.componentWillUnmount();
-    doSubscribe(self, nextProps);
+    doSubscribe(this, nextProps);
   },
   componentWillMount: function componentWillMount() {
     doSubscribe(this, this.props);

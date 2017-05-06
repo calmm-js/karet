@@ -37,7 +37,7 @@ var LiftedComponent = /*#__PURE__*/infestines.inherit(function LiftedComponent(p
 }, Component$1, {
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
     this.componentWillUnmount();
-    doSubscribe(self, nextProps);
+    doSubscribe(this, nextProps);
   },
   componentWillMount: function componentWillMount() {
     doSubscribe(this, this.props);
