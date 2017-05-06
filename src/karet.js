@@ -41,7 +41,7 @@ const LiftedComponent = /*#__PURE__*/inherit(function LiftedComponent(props) {
 }, Component, {
   componentWillReceiveProps(nextProps) {
     this.componentWillUnmount()
-    doSubscribe(self, nextProps)
+    doSubscribe(this, nextProps)
   },
   componentWillMount() {
     doSubscribe(this, this.props)
