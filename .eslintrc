@@ -15,10 +15,7 @@
     "react/jsx-uses-vars": 1,
     "semi": [2, "never"]
   },
-  "env": {
-    "browser": true,
-    "es6": true,
-    "mocha": true,
-    "node": true
+  "globals": {
+    "process": true
   }
 }
