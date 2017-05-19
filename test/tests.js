@@ -86,6 +86,9 @@ describe("basics", () => {
                Hello {Kefir.constant("world!")}
              </ChildrenWithSibling>,
              '<div>Test: Hello world!</div>')
+
+  testRender(<span>0</span>, '<span>0</span>')
+  testRender(<span>{Kefir.constant(0)}</span>, '<span>0</span>')
 })
 
 describe("fromKefir", () => {
