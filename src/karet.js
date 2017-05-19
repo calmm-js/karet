@@ -168,7 +168,7 @@ function render(self, values) {
 
   return newChildren instanceof Array
     ? reactElement.apply(null, [type, newProps].concat(newChildren))
-    : newChildren
+    : null !== newChildren
     ? reactElement(type, newProps, newChildren)
     : reactElement(type, newProps)
 }
