@@ -115,7 +115,7 @@ function renderChildren(children, self, values) {
 }
 
 function renderStyle(style, self, values) {
-  var newStyle = undefined;
+  var newStyle = null;
   for (var i in style) {
     var styleI = style[i];
     if (isObs(styleI)) {
@@ -157,14 +157,14 @@ function _render(self, values) {
       newProps[key] = values[self.at++];
     } else if (STYLE === key) {
       newProps = newProps || {};
-      newProps.style = renderStyle(val, self, values) || val;
+      newProps.style = renderStyle(val, self, values);
     } else {
       newProps = newProps || {};
       newProps[key] = val;
     }
   }
 
-  return newChildren instanceof Array ? reactElement.apply(null, [type, newProps].concat(newChildren)) : newChildren ? reactElement(type, newProps, newChildren) : reactElement(type, newProps);
+  return newChildren instanceof Array ? reactElement.apply(null, [type, newProps].concat(newChildren)) : null !== newChildren ? reactElement(type, newProps, newChildren) : reactElement(type, newProps);
 }
 
 //
