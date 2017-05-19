@@ -43,11 +43,11 @@
     "codecov": "^2.2.0",
     "eslint": "^3.19.0",
     "eslint-plugin-babel": "^4.1.1",
-    "eslint-plugin-react": "^7.0.0",
+    "eslint-plugin-react": "^7.0.1",
     "kefir": "^3.7.1",
-    "mocha": "^3.3.0",
+    "mocha": "^3.4.1",
     "nyc": "^10.3.2",
-    "prop-types": "^15.5.9",
+    "prop-types": "^15.5.10",
     "react-addons-test-utils": "^15.5.1",
     "react-dom": "^15.5.4",
     "rollup": "^0.41.6",
@@ -55,7 +55,7 @@
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-replace": "^1.1.1",
-    "rollup-plugin-uglify": "^1.0.2"
+    "rollup-plugin-uglify": "^2.0.0"
   },
   "dependencies": {
     "infestines": "^0.4.4",
