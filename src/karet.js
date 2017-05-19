@@ -116,7 +116,7 @@ function renderChildren(children, self, values) {
 }
 
 function renderStyle(style, self, values) {
-  let newStyle = undefined
+  let newStyle = null
   for (const i in style) {
     const styleI = style[i]
     if (isObs(styleI)) {
@@ -159,7 +159,7 @@ function render(self, values) {
       newProps[key] = values[self.at++]
     } else if (STYLE === key) {
       newProps = newProps || {}
-      newProps.style = renderStyle(val, self, values) || val
+      newProps.style = renderStyle(val, self, values)
     } else {
       newProps = newProps || {}
       newProps[key] = val
