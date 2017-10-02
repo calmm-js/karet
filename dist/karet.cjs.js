@@ -367,14 +367,6 @@ function createElement$1() {
   return reactElement.apply(undefined, args);
 }
 
-var karet = process.env.NODE_ENV === "production" ? /*#__PURE__*/infestines.assocPartialU("createElement", createElement$1, React) : /*#__PURE__*/Object.defineProperty(infestines.assocPartialU("createElement", createElement$1, infestines.dissocPartialU("PropTypes", React)), "PropTypes", {
-  get: function (React$$1) {
-    return function () {
-      return React$$1.PropTypes;
-    };
-  }(React)
-});
-
 //
 
 var fromClass = function fromClass(Class) {
@@ -385,5 +377,4 @@ var fromClass = function fromClass(Class) {
 
 exports.fromKefir = fromKefir;
 exports.createElement = createElement$1;
-exports['default'] = karet;
 exports.fromClass = fromClass;

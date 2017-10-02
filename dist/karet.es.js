@@ -1,7 +1,6 @@
 import { Component, createElement } from 'react';
-import * as React from 'react';
 import { Observable } from 'kefir';
-import { array0, assocPartialU, dissocPartialU, inherit, isArray, isString, object0 } from 'infestines';
+import { array0, dissocPartialU, inherit, isArray, isString, object0 } from 'infestines';
 
 //
 
@@ -364,14 +363,6 @@ function createElement$1() {
   return reactElement.apply(undefined, args);
 }
 
-var karet = process.env.NODE_ENV === "production" ? /*#__PURE__*/assocPartialU("createElement", createElement$1, React) : /*#__PURE__*/Object.defineProperty(assocPartialU("createElement", createElement$1, dissocPartialU("PropTypes", React)), "PropTypes", {
-  get: function (React$$1) {
-    return function () {
-      return React$$1.PropTypes;
-    };
-  }(React)
-});
-
 //
 
 var fromClass = function fromClass(Class) {
@@ -380,4 +371,4 @@ var fromClass = function fromClass(Class) {
   };
 };
 
-export { fromKefir, createElement$1 as createElement, fromClass };export default karet;
+export { fromKefir, createElement$1 as createElement, fromClass };

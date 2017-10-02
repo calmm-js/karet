@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('react'), require('kefir'), require('infestines')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'react', 'kefir', 'infestines'], factory) :
-	(factory((global.karet = global.karet || {}),global.React,global.Kefir,global.I));
+	(factory((global.karet = {}),global.React,global.Kefir,global.I));
 }(this, (function (exports,React,kefir,infestines) { 'use strict';
 
 //
@@ -365,14 +365,6 @@ function createElement$1() {
   return reactElement.apply(undefined, args);
 }
 
-var karet = Object.defineProperty(infestines.assocPartialU("createElement", createElement$1, infestines.dissocPartialU("PropTypes", React)), "PropTypes", {
-  get: function (React$$1) {
-    return function () {
-      return React$$1.PropTypes;
-    };
-  }(React)
-});
-
 //
 
 var fromClass = function fromClass(Class) {
@@ -383,7 +375,6 @@ var fromClass = function fromClass(Class) {
 
 exports.fromKefir = fromKefir;
 exports.createElement = createElement$1;
-exports['default'] = karet;
 exports.fromClass = fromClass;
 
 Object.defineProperty(exports, '__esModule', { value: true });
