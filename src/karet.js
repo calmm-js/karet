@@ -2,7 +2,6 @@ import * as React from "react"
 import {Observable} from "kefir"
 import {
   array0,
-  assocPartialU,
   dissocPartialU,
   inherit,
   isArray,
@@ -366,12 +365,6 @@ export function createElement(...args) {
   }
   return reactElement(...args)
 }
-
-export default process.env.NODE_ENV === "production"
-  ? /*#__PURE__*/assocPartialU("createElement", createElement, React)
-  : /*#__PURE__*/Object.defineProperty(assocPartialU("createElement", createElement, dissocPartialU("PropTypes", React)), "PropTypes", {
-    get: (React => () => React.PropTypes)(React)
-  })
 
 //
 
