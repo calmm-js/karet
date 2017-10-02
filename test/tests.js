@@ -45,12 +45,12 @@ describe("basics", () => {
                <p>{Kefir.constant(["Hello"])}</p>
                <p>{Kefir.constant(["World"])}</p>
              </div>,
-             '<div style="display:block;color:red;background:green;"><p>Hello</p><p>World</p></div>')
+             '<div style="display:block;color:red;background:green"><p>Hello</p><p>World</p></div>')
 
   testRender(<a href="#lol" style={Kefir.constant({color: "red"})}>
                {Kefir.constant("Hello")} {Kefir.constant("world!")}
              </a>,
-             '<a href="#lol" style="color:red;">Hello world!</a>')
+             '<a href="#lol" style="color:red">Hello world!</a>')
 
   testRender(<div>{Kefir.later(1000,0)}</div>, "")
   testRender(<div>{Kefir.constant(1).merge(Kefir.later(1000,0))}</div>, "<div>1</div>")
