@@ -73,8 +73,9 @@ modules that do not import `karet`.
 
 ### <a name="Fragment"></a> [≡](#contents) [`Fragment`](#Fragment)
 
-In addition to `createElement`, Karet exports React's `Fragment` component and
-lifts fragments implicitly.
+In addition to `createElement`, Karet exports [React's `Fragment`
+component](https://reactjs.org/docs/fragments.html) and lifts fragments
+implicitly.
 
 ### <a name="karet-lift"></a> [≡](#contents) [`karet-lift` attribute](#karet-lift)
 
