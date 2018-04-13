@@ -2,22 +2,18 @@
 
 # Karet
 
-Karet is a library that allows you to
-embed [Kefir](http://rpominov.github.io/kefir/) observables
-into [React](https://facebook.github.io/react/) Virtual DOM.  Embedding
-observables into VDOM has the following benefits:
-* It allows you to use
-  only
-  [functional components](https://facebook.github.io/react/docs/components-and-props.html#functional-and-class-components),
-  because you can then use observables for managing state
-  and [`ref`](https://facebook.github.io/react/docs/refs-and-the-dom.html) for
-  component lifetime, leading to more **_concise code_**.
+Karet is a library that allows you to embed
+[Kefir](https://kefirjs.github.io/kefir/) observables into
+[React](https://facebook.github.io/react/) Virtual DOM.  Embedding observables
+into VDOM has the following benefits:
+
+* It allows you to use only [functional
+  components](https://facebook.github.io/react/docs/components-and-props.html#functional-and-class-components),
+  because you can then use observables for managing state and component
+  lifetime, leading to more **_concise code_**.
 * It helps you to use React in an **_algorithmically efficient_** way:
   * The body of a functional component is evaluated only once each time the
     component is mounted.
-    * This also helps you to avoid issues such as
-      the
-      [gotcha with ref](https://facebook.github.io/react/docs/refs-and-the-dom.html#caveats).
   * Only elements that contain embedded observables are rerendered when changes
     are pushed through observables.  An update to a deeply nested VDOM element
     can be an O(1) operation.
@@ -60,7 +56,7 @@ const Clock = () =>
   </div>
 ```
 
-with VDOM that can have embedded [Kefir](http://rpominov.github.io/kefir/)
+with VDOM that can have embedded [Kefir](https://kefirjs.github.io/kefir/)
 observables.  This works because Karet exports an enhanced version of
 `createElement`.
 
@@ -88,8 +84,8 @@ import * as React from "karet"
 const Link1 = ({...props}) => <RR.Link karet-lift {...props}/>
 ```
 
-to be able to use `Link1` with
-embedded [Kefir](http://rpominov.github.io/kefir/) observables:
+to be able to use `Link1` with embedded
+[Kefir](https://kefirjs.github.io/kefir/) observables:
 
 ```jsx
 <Link1 href="https://www.youtube.com/watch?v=Rbm6GXllBiw"
@@ -98,8 +94,8 @@ embedded [Kefir](http://rpominov.github.io/kefir/) observables:
 </Link1>
 ```
 
-Note that the `ref` attribute is only there as an example to contrast
-with [`$$ref`](#ref).
+Note that the `ref` attribute is only there as an example to contrast with
+[`$$ref`](#ref).
 
 ### <a name="fromKefir"></a> [≡](#contents) [`fromKefir(observableVDOM)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
 
@@ -144,8 +140,8 @@ const Link2 = fromClass(RR.Link)
 ```
 
 **WARNING:** A difficulty with lifting components is that you will then need to
-use the [`$$ref`](#ref) attribute, which is not necessary when
-using [`karet-lift`](#karet-lift) to lift an element.
+use the [`$$ref`](#ref) attribute, which is not necessary when using
+[`karet-lift`](#karet-lift) to lift an element.
 
 #### <a name="ref"></a> [≡](#contents) [`$$ref` attribute](#ref)
 
@@ -158,8 +154,7 @@ The `$$ref` attribute on an element whose component is lifted using `fromClass`
 </Link2>
 ```
 
-does the same thing as the ordinary
-JSX
-[`ref` attribute](https://facebook.github.io/react/docs/more-about-refs.html#the-ref-callback-attribute):
+does the same thing as the ordinary JSX [`ref`
+attribute](https://facebook.github.io/react/docs/more-about-refs.html#the-ref-callback-attribute):
 JSX/React treats `ref` as a special case and it is not passed to components, so
 a special name had to be introduced for it.
