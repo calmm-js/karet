@@ -1,32 +1,52 @@
-import babel       from "rollup-plugin-babel"
-import commonjs    from "rollup-plugin-commonjs"
-import nodeResolve from "rollup-plugin-node-resolve"
-import replace     from "rollup-plugin-replace"
-import uglify      from "rollup-plugin-uglify"
+import babel from 'rollup-plugin-babel'
+import commonjs from 'rollup-plugin-commonjs'
+import nodeResolve from 'rollup-plugin-node-resolve'
+import replace from 'rollup-plugin-replace'
+import uglify from 'rollup-plugin-uglify'
 
-export default {
-  exports: "named",
-  external: ["infestines", "react", "kefir"],
-  globals: {
-    "infestines": "I",
-    "kefir": "Kefir",
-    "react": "React"
+const build = ({NODE_ENV, format, file}) => ({
+  external: ['infestines', 'react', 'kefir'],
+  input: 'src/karet.js',
+  output: {
+    globals: {
+      infestines: 'I',
+      kefir: 'Kefir',
+      react: 'React'
+    },
+    exports: 'named',
+    name: 'karet',
+    format,
+    file
   },
   plugins: [
-    process.env.NODE_ENV &&
-      replace({"process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)}),
+    NODE_ENV && replace({'process.env.NODE_ENV': JSON.stringify(NODE_ENV)}),
     nodeResolve(),
     commonjs({
-      include: "node_modules/**",
+      include: 'node_modules/**',
       namedExports: {
-        "node_modules/react/index.js": [
-          "Component",
-          "createElement"
-        ]
+        'node_modules/react/index.js': ['Component', 'createElement']
       }
     }),
     babel(),
-    process.env.NODE_ENV === "production" &&
-      uglify()
+    NODE_ENV === 'production' &&
+      uglify({
+        compress: {
+          hoist_funs: true,
+          passes: 3,
+          pure_getters: true,
+          pure_funcs: ['require']
+        }
+      })
   ].filter(x => x)
-}
+})
+
+export default [
+  build({format: 'cjs', file: 'dist/karet.cjs.js'}),
+  build({format: 'es', file: 'dist/karet.es.js'}),
+  build({format: 'umd', file: 'dist/karet.js', NODE_ENV: 'dev'}),
+  build({
+    format: 'umd',
+    file: 'dist/karet.min.js',
+    NODE_ENV: 'production'
+  })
+]
