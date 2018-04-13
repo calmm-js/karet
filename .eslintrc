@@ -16,6 +16,7 @@
     "semi": [2, "never"]
   },
   "globals": {
-    "process": true
+    "process": true,
+    "console": true
   }
 }
