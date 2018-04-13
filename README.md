@@ -32,6 +32,7 @@ you are good to go.
 
 * [Tutorial](#tutorial)
 * [Reference](#reference)
+  * [`Fragment`](#Fragment)
   * [`karet-lift` attribute](#karet-lift)
   * [`fromKefir(observableVDOM)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
   * [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Observable props)")
@@ -70,6 +71,11 @@ modules that do not import `karet`.
 
 ## Reference
 
+### <a name="Fragment"></a> [≡](#contents) [`Fragment`](#Fragment)
+
+In addition to `createElement`, Karet exports React's `Fragment` component and
+lifts fragments implicitly.
+
 ### <a name="karet-lift"></a> [≡](#contents) [`karet-lift` attribute](#karet-lift)
 
 Karet only lifts built-in HTML elements implicitly.  The `karet-lift` attribute
@@ -98,6 +104,8 @@ Note that the `ref` attribute is only there as an example to contrast with
 [`$$ref`](#ref).
 
 ### <a name="fromKefir"></a> [≡](#contents) [`fromKefir(observableVDOM)`](#fromKefir "fromKefir: Observable VDOM -> VDOM")
+
+**WARNING: `fromKefir` has been obsoleted, use [`Fragment`](#Fragment) instead.**
 
 `fromKefir` allows one to convert a Kefir observable of React elements into a
 React element.  It is useful in case the top-most element of a component depends

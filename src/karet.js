@@ -3,11 +3,23 @@ import {Observable} from 'kefir'
 import {
   array0,
   dissocPartialU,
+  id,
   inherit,
   isArray,
   isString,
   object0
 } from 'infestines'
+
+//
+
+const header = 'karet: '
+
+function warn(f, m) {
+  if (!f.warned) {
+    f.warned = 1
+    console.warn(header + m)
+  }
+}
 
 //
 
@@ -91,7 +103,12 @@ const FromKefir = inherit(
   }
 )
 
-export const fromKefir = observable => reactElement(FromKefir, {observable})
+export const fromKefir = (process.env.NODE_ENV === 'production'
+  ? id
+  : fn => x => {
+      warn(fromKefir, '`fromKefir` has been obsoleted, use `Fragment` instead.')
+      return fn(x)
+    })(observable => reactElement(FromKefir, {observable}))
 
 //
 
@@ -356,10 +373,12 @@ function filterProps(type, props) {
   return newProps
 }
 
+export {Fragment} from 'react'
+
 export function createElement(...args) {
   const type = args[0]
   const props = args[1] || object0
-  if (isString(type) || props[LIFT]) {
+  if (isString(type) || React.Fragment === type || props[LIFT]) {
     if (hasObsInChildrenArray(2, args) || hasObsInProps(props)) {
       args[1] = filterProps(type, props)
       args[0] = FromClass

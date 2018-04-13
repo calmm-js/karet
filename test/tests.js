@@ -138,8 +138,27 @@ describe('basics', () => {
   testRender(<span>{Kefir.constant(0)}</span>, '<span>0</span>')
 })
 
+describe('Fragment', () => {
+  testRender(
+    <ul>
+      {
+        <React.Fragment>
+          {Kefir.constant(<li>1</li>)}
+          <li>2</li>
+        </React.Fragment>
+      }
+    </ul>,
+    '<ul><li>1</li><li>2</li></ul>'
+  )
+  testRender(
+    <React.Fragment>{Kefir.constant(<p>Yes</p>)}</React.Fragment>,
+    '<p>Yes</p>'
+  )
+})
+
 describe('fromKefir', () => {
   testRender(React.fromKefir(Kefir.constant(<p>Yes</p>)), '<p>Yes</p>')
+  testRender(React.fromKefir(Kefir.constant(<p>No</p>)), '<p>No</p>')
 })
 
 describe('fromClass', () => {
