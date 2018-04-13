@@ -1,16 +1,28 @@
-import { Component, createElement } from 'react';
+import { createElement, Component, Fragment } from 'react';
+export { Fragment } from 'react';
 import { Observable } from 'kefir';
-import { array0, dissocPartialU, inherit, isArray, isString, object0 } from 'infestines';
+import { array0, dissocPartialU, id, inherit, isArray, isString, object0 } from 'infestines';
 
 //
 
-var VALUE = "value";
-var ERROR = "error";
-var END = "end";
-var STYLE = "style";
-var CHILDREN = "children";
-var LIFT = "karet-lift";
-var DD_REF = "$$ref";
+var header = 'karet: ';
+
+function warn(f, m) {
+  if (!f.warned) {
+    f.warned = 1;
+    console.warn(header + m);
+  }
+}
+
+//
+
+var VALUE = 'value';
+var ERROR = 'error';
+var END = 'end';
+var STYLE = 'style';
+var CHILDREN = 'children';
+var LIFT = 'karet-lift';
+var DD_REF = '$$ref';
 
 //
 
@@ -82,9 +94,14 @@ var FromKefir = /*#__PURE__*/inherit(function FromKefir(props) {
   }
 });
 
-var fromKefir = function fromKefir(observable) {
+var fromKefir = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn) {
+  return function (x) {
+    warn(fromKefir, '`fromKefir` has been obsoleted, use `Fragment` instead.');
+    return fn(x);
+  };
+})(function (observable) {
   return reactElement(FromKefir, { observable: observable });
-};
+});
 
 //
 
@@ -145,7 +162,7 @@ function _render(self, values) {
     var val = props[key];
     if (CHILDREN === key) {
       newChildren = renderChildren(val, self, values);
-    } else if ("$$type" === key) {
+    } else if ('$$type' === key) {
       type = props[key];
     } else if (DD_REF === key) {
       newProps = newProps || {};
@@ -337,10 +354,10 @@ function hasObsInProps(props) {
 //
 
 function filterProps(type, props) {
-  var newProps = { "$$type": type };
+  var newProps = { $$type: type };
   for (var key in props) {
     var val = props[key];
-    if ("ref" === key) newProps[DD_REF] = val;else if (LIFT !== key) newProps[key] = val;
+    if ('ref' === key) newProps[DD_REF] = val;else if (LIFT !== key) newProps[key] = val;
   }
   return newProps;
 }
@@ -352,7 +369,7 @@ function createElement$1() {
 
   var type = args[0];
   var props = args[1] || object0;
-  if (isString(type) || props[LIFT]) {
+  if (isString(type) || Fragment === type || props[LIFT]) {
     if (hasObsInChildrenArray(2, args) || hasObsInProps(props)) {
       args[1] = filterProps(type, props);
       args[0] = FromClass;
