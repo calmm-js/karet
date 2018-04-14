@@ -24,7 +24,11 @@ const build = ({NODE_ENV, format, file}) => ({
     commonjs({
       include: 'node_modules/**',
       namedExports: {
-        'node_modules/react/index.js': ['Component', 'createElement']
+        'node_modules/react/index.js': [
+          'Component',
+          'Fragment',
+          'createElement'
+        ]
       }
     }),
     babel(),
