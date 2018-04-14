@@ -70,16 +70,13 @@ describe('basics', () => {
     '<a href="#lol" style="color:red">Hello world!</a>'
   )
 
-  testRender(<div>{Kefir.later(1000, 0)}</div>, '')
-  testRender(
-    <div>{Kefir.constant(1).merge(Kefir.later(1000, 0))}</div>,
-    '<div>1</div>'
-  )
   testRender(
     <div>
-      {Kefir.later(1000, 0)} {Kefir.constant(0)}
+      {Kefir.constant(1)
+        .merge(Kefir.later(1000, 0))
+        .toProperty()}
     </div>,
-    ''
+    '<div>1</div>'
   )
 
   const Custom = ({prop, ...props}) => (
@@ -136,6 +133,16 @@ describe('basics', () => {
 
   testRender(<span>0</span>, '<span>0</span>')
   testRender(<span>{Kefir.constant(0)}</span>, '<span>0</span>')
+
+  testRender(
+    <div dangerouslySetInnerHTML={{__html: 'oh yes'}} />,
+    '<div>oh yes</div>'
+  )
+
+  testRender(
+    <div dangerouslySetInnerHTML={{__html: Kefir.constant('oh yes')}} />,
+    '<div>oh yes</div>'
+  )
 })
 
 describe('Fragment', () => {
@@ -143,7 +150,7 @@ describe('Fragment', () => {
     <ul>
       {
         <React.Fragment>
-          {Kefir.constant(<li>1</li>)}
+          {Kefir.constant(<li key="1">1</li>)}
           <li>2</li>
         </React.Fragment>
       }
@@ -156,14 +163,9 @@ describe('Fragment', () => {
   )
 })
 
-describe('fromKefir', () => {
-  testRender(React.fromKefir(Kefir.constant(<p>Yes</p>)), '<p>Yes</p>')
-  testRender(React.fromKefir(Kefir.constant(<p>No</p>)), '<p>No</p>')
-})
-
 describe('fromClass', () => {
   const P = React.fromClass('p')
-  testRender(<P $$ref={() => {}}>Hello</P>, '<p>Hello</p>')
+  testRender(<P ref={() => {}}>Hello</P>, '<p>Hello</p>')
 
   testRender(<P>Hello, {'world'}!</P>, '<p>Hello, world!</p>')
   testRender(
@@ -171,9 +173,16 @@ describe('fromClass', () => {
     '<p>Hello, world!</p>'
   )
 
-  testRender(<P>{[Kefir.constant('Hello')]}</P>, '<p>Hello</p>')
+  testRender(
+    <P>
+      <code />
+      {[[[<code key={1} />]], [<code key={2} />]]}
+      <code />
+    </P>,
+    '<p><code></code><code></code><code></code><code></code></p>'
+  )
 
-  testRender(<P>{Kefir.later(1000, 0)}</P>, '')
+  testRender(<P>{[Kefir.constant('Hello')]}</P>, '<p>Hello</p>')
 })
 
 describe('context', () => {

@@ -27,7 +27,8 @@ const build = ({NODE_ENV, format, file}) => ({
         'node_modules/react/index.js': [
           'Component',
           'Fragment',
-          'createElement'
+          'createElement',
+          'forwardRef'
         ]
       }
     }),
