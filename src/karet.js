@@ -119,51 +119,77 @@ function onAny(handler, property) {
   property.onAny(handler)
 }
 
+function doSubscribe(self, {args}) {
+  let handler = self.h
+  if (!handler)
+    handler = self.h = e => {
+      const {type} = e
+      if (type === VALUE) {
+        self.forceUpdate()
+      } else if (type === ERROR) {
+        throw e.value
+      }
+    }
+
+  forEachInProps(args[1], handler, onAny)
+  forEachInChildren(2, args, handler, onAny)
+}
+
+function doUnsubscribe(self, {args}) {
+  const handler = self.h
+  if (handler) {
+    forEachInChildren(2, args, handler, offAny)
+    forEachInProps(args[1], handler, offAny)
+  }
+}
+
+const server = typeof window === 'undefined' && {h: null, forceUpdate() {}}
+
 const FromClass = I.inherit(
   function FromClass(props) {
     React.Component.call(this, props)
-    this.handler = null
+    this.h = null
+    if (server) this.state = I.object0
   },
   React.Component,
   {
-    componentWillMount() {
-      this.doSubscribe(this.props)
+    componentDidMount() {
+      doSubscribe(this, this.props)
     },
-    componentWillReceiveProps(nextProps) {
-      this.componentWillUnmount()
-      this.doSubscribe(nextProps)
+    componentDidUpdate(prevProps) {
+      const props = this.props
+      if (!I.acyclicEqualsU(props, prevProps)) {
+        doUnsubscribe(this, prevProps)
+        doSubscribe(this, props)
+      }
     },
     componentWillUnmount() {
-      const handler = this.handler
-      if (handler) {
-        const {args} = this.props
-        forEachInChildren(2, args, handler, offAny)
-        forEachInProps(args[1], handler, offAny)
-      }
-    },
-    doSubscribe({args}) {
-      const handler = (this.handler = e => {
-        const {type} = e
-        if (type === VALUE) this.forceUpdate()
-        else if (type === ERROR) throw e.value
-        else this.handler = null
-      })
-      forEachInProps(args[1], handler, onAny)
-      forEachInChildren(2, args, handler, onAny)
+      doUnsubscribe(this, this.props)
     },
     render() {
-      const {args} = this.props
-      const n = args.length
-      const newArgs = Array(n)
-      newArgs[0] = args[0]
-      newArgs[1] = renderProps(args[1])
-      for (let i = 2; i < n; ++i) {
-        const v = args[i]
-        newArgs[i] = isProperty(v)
-          ? valueOf(v)
-          : I.isArray(v) ? renderChildren(v) : v
+      if (this.h || server) {
+        const {args} = this.props
+        const n = args.length
+        const newArgs = Array(n)
+        newArgs[0] = args[0]
+        newArgs[1] = renderProps(args[1])
+        for (let i = 2; i < n; ++i) {
+          const v = args[i]
+          newArgs[i] = isProperty(v)
+            ? valueOf(v)
+            : I.isArray(v) ? renderChildren(v) : v
+        }
+        return React.createElement.apply(null, newArgs)
+      } else {
+        return null
       }
-      return React.createElement.apply(null, newArgs)
+    }
+  },
+  server && {
+    getDerivedStateFromProps(nextProps) {
+      doSubscribe(server, nextProps)
+      doUnsubscribe(server, nextProps)
+      return null
     }
   }
 )
@@ -229,7 +255,7 @@ export const fromClass = type =>
   React.forwardRef((props, ref) =>
     considerLifting([
       type,
-      undefined === ref ? props : I.assocPartialU('ref', ref, props)
+      null == ref ? props : I.assocPartialU('ref', ref, props)
     ])
   )
 
