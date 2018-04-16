@@ -1,4 +1,4 @@
-import { isArray, inherit, isString, dissocPartialU, assocPartialU } from 'infestines';
+import { isArray, inherit, object0, acyclicEqualsU, isString, dissocPartialU, assocPartialU } from 'infestines';
 import { Component, createElement, Fragment, forwardRef } from 'react';
 export { Fragment } from 'react';
 import { Property } from 'kefir';
@@ -117,51 +117,77 @@ function onAny(handler, property) {
   property.onAny(handler);
 }
 
+function doSubscribe(self, _ref) {
+  var args = _ref.args;
+
+  var handler = self.h;
+  if (!handler) handler = self.h = function (e) {
+    var type = e.type;
+
+    if (type === VALUE) {
+      self.forceUpdate();
+    } else if (type === ERROR) {
+      throw e.value;
+    }
+  };
+
+  forEachInProps(args[1], handler, onAny);
+  forEachInChildren(2, args, handler, onAny);
+}
+
+function doUnsubscribe(self, _ref2) {
+  var args = _ref2.args;
+
+  var handler = self.h;
+  if (handler) {
+    forEachInChildren(2, args, handler, offAny);
+    forEachInProps(args[1], handler, offAny);
+  }
+}
+
+var server = typeof window === 'undefined' && { h: null, forceUpdate: function forceUpdate() {}
+};
+
 var FromClass = /*#__PURE__*/inherit(function FromClass(props) {
   Component.call(this, props);
-  this.handler = null;
+  this.h = null;
+  if (server) this.state = object0;
 }, Component, {
-  componentWillMount: function componentWillMount() {
-    this.doSubscribe(this.props);
+  componentDidMount: function componentDidMount() {
+    doSubscribe(this, this.props);
   },
-  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-    this.componentWillUnmount();
-    this.doSubscribe(nextProps);
+  componentDidUpdate: function componentDidUpdate(prevProps) {
+    var props = this.props;
+    if (!acyclicEqualsU(props, prevProps)) {
+      doUnsubscribe(this, prevProps);
+      doSubscribe(this, props);
+    }
   },
   componentWillUnmount: function componentWillUnmount() {
-    var handler = this.handler;
-    if (handler) {
-      var args = this.props.args;
-
-      forEachInChildren(2, args, handler, offAny);
-      forEachInProps(args[1], handler, offAny);
-    }
-  },
-  doSubscribe: function doSubscribe(_ref) {
-    var _this = this;
-
-    var args = _ref.args;
-
-    var handler = this.handler = function (e) {
-      var type = e.type;
-
-      if (type === VALUE) _this.forceUpdate();else if (type === ERROR) throw e.value;else _this.handler = null;
-    };
-    forEachInProps(args[1], handler, onAny);
-    forEachInChildren(2, args, handler, onAny);
+    doUnsubscribe(this, this.props);
   },
   render: function render() {
-    var args = this.props.args;
+    if (this.h || server) {
+      var args = this.props.args;
 
-    var n = args.length;
-    var newArgs = Array(n);
-    newArgs[0] = args[0];
-    newArgs[1] = renderProps(args[1]);
-    for (var i = 2; i < n; ++i) {
-      var v = args[i];
-      newArgs[i] = isProperty(v) ? valueOf(v) : isArray(v) ? renderChildren(v) : v;
+      var n = args.length;
+      var newArgs = Array(n);
+      newArgs[0] = args[0];
+      newArgs[1] = renderProps(args[1]);
+      for (var i = 2; i < n; ++i) {
+        var v = args[i];
+        newArgs[i] = isProperty(v) ? valueOf(v) : isArray(v) ? renderChildren(v) : v;
+      }
+      return createElement.apply(null, newArgs);
+    } else {
+      return null;
     }
-    return createElement.apply(null, newArgs);
+  }
+}, server && {
+  getDerivedStateFromProps: function getDerivedStateFromProps(nextProps) {
+    doSubscribe(server, nextProps);
+    doUnsubscribe(server, nextProps);
+    return null;
   }
 });
 
@@ -226,7 +252,7 @@ function createElement$1(type, props, _child) {
 
 var fromClass = function fromClass(type) {
   return forwardRef(function (props, ref) {
-    return considerLifting([type, undefined === ref ? props : assocPartialU('ref', ref, props)]);
+    return considerLifting([type, null == ref ? props : assocPartialU('ref', ref, props)]);
   });
 };
 
