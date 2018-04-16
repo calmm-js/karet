@@ -143,13 +143,13 @@ function doUnsubscribe(self, {args}) {
   }
 }
 
-const server = typeof window === 'undefined' && {h: null, forceUpdate() {}}
+const server =
+  typeof window === 'undefined' ? {h: null, forceUpdate() {}} : null
 
 const FromClass = I.inherit(
   function FromClass(props) {
     React.Component.call(this, props)
-    this.h = null
-    if (server) this.state = I.object0
+    if ((this.h = server)) this.state = I.object0
   },
   React.Component,
   {
@@ -167,7 +167,7 @@ const FromClass = I.inherit(
       doUnsubscribe(this, this.props)
     },
     render() {
-      if (this.h || server) {
+      if (this.h) {
         const {args} = this.props
         const n = args.length
         const newArgs = Array(n)
