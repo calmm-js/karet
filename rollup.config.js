@@ -4,7 +4,7 @@ import nodeResolve from 'rollup-plugin-node-resolve'
 import replace from 'rollup-plugin-replace'
 import uglify from 'rollup-plugin-uglify'
 
-const build = ({NODE_ENV, format, file}) => ({
+const build = ({NODE_ENV, format, suffix}) => ({
   external: ['infestines', 'react', 'kefir'],
   input: 'src/karet.js',
   output: {
@@ -16,7 +16,7 @@ const build = ({NODE_ENV, format, file}) => ({
     exports: 'named',
     name: 'karet',
     format,
-    file
+    file: `dist/karet.${suffix}`
   },
   plugins: [
     NODE_ENV && replace({'process.env.NODE_ENV': JSON.stringify(NODE_ENV)}),
@@ -46,12 +46,8 @@ const build = ({NODE_ENV, format, file}) => ({
 })
 
 export default [
-  build({format: 'cjs', file: 'dist/karet.cjs.js'}),
-  build({format: 'es', file: 'dist/karet.es.js'}),
-  build({format: 'umd', file: 'dist/karet.js', NODE_ENV: 'dev'}),
-  build({
-    format: 'umd',
-    file: 'dist/karet.min.js',
-    NODE_ENV: 'production'
-  })
+  build({format: 'cjs', suffix: 'cjs.js'}),
+  build({format: 'es', suffix: 'es.js'}),
+  build({format: 'umd', suffix: 'js', NODE_ENV: 'dev'}),
+  build({format: 'umd', suffix: 'min.js', NODE_ENV: 'production'})
 ]
