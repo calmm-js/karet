@@ -143,6 +143,25 @@ function doUnsubscribe(self, {args}) {
   }
 }
 
+function decObs(obs2num, property) {
+  obs2num.set(property, (obs2num.get(property) || 0) - 1)
+}
+
+function incObs(obs2num, property) {
+  obs2num.set(property, (obs2num.get(property) || 0) + 1)
+}
+
+function updateObs(delta, property, obs2num) {
+  if (delta < 0)
+    do {
+      property.offAny(obs2num.h)
+    } while (++delta)
+  else if (0 < delta)
+    do {
+      property.onAny(obs2num.h)
+    } while (--delta)
+}
+
 const server =
   typeof window === 'undefined' ? {h: null, forceUpdate() {}} : null
 
@@ -156,12 +175,19 @@ const FromClass = I.inherit(
     componentDidMount() {
       doSubscribe(this, this.props)
     },
-    componentDidUpdate(prevProps) {
-      const props = this.props
-      if (!I.acyclicEqualsU(props, prevProps)) {
-        doUnsubscribe(this, prevProps)
-        doSubscribe(this, props)
-      }
+    componentDidUpdate({args: before}) {
+      const {args: after} = this.props
+
+      const obs2num = new Map()
+      obs2num.h = this.h
+
+      forEachInProps(before[1], obs2num, decObs)
+      forEachInChildren(2, before, obs2num, decObs)
+
+      forEachInProps(after[1], obs2num, incObs)
+      forEachInChildren(2, after, obs2num, incObs)
+
+      obs2num.forEach(updateObs)
     },
     componentWillUnmount() {
       doUnsubscribe(this, this.props)
