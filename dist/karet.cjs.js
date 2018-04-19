@@ -148,29 +148,53 @@ function doUnsubscribe(self, _ref2) {
   }
 }
 
-var server = typeof window === 'undefined' && { h: null, forceUpdate: function forceUpdate() {}
-};
+function decObs(obs2num, property) {
+  obs2num.set(property, (obs2num.get(property) || 0) - 1);
+}
+
+function incObs(obs2num, property) {
+  obs2num.set(property, (obs2num.get(property) || 0) + 1);
+}
+
+function updateObs(delta, property, obs2num) {
+  if (delta < 0) do {
+    property.offAny(obs2num.h);
+  } while (++delta);else if (0 < delta) do {
+    property.onAny(obs2num.h);
+  } while (--delta);
+}
+
+var server = typeof window === 'undefined' ? { h: null, forceUpdate: function forceUpdate() {}
+} : null;
 
 var FromClass = /*#__PURE__*/I.inherit(function FromClass(props) {
   React.Component.call(this, props);
-  this.h = null;
-  if (server) this.state = I.object0;
+  if (this.h = server) this.state = I.object0;
 }, React.Component, {
   componentDidMount: function componentDidMount() {
     doSubscribe(this, this.props);
   },
-  componentDidUpdate: function componentDidUpdate(prevProps) {
-    var props = this.props;
-    if (!I.acyclicEqualsU(props, prevProps)) {
-      doUnsubscribe(this, prevProps);
-      doSubscribe(this, props);
-    }
+  componentDidUpdate: function componentDidUpdate(_ref3) {
+    var before = _ref3.args;
+    var after = this.props.args;
+
+
+    var obs2num = new Map();
+    obs2num.h = this.h;
+
+    forEachInProps(before[1], obs2num, decObs);
+    forEachInChildren(2, before, obs2num, decObs);
+
+    forEachInProps(after[1], obs2num, incObs);
+    forEachInChildren(2, after, obs2num, incObs);
+
+    obs2num.forEach(updateObs);
   },
   componentWillUnmount: function componentWillUnmount() {
     doUnsubscribe(this, this.props);
   },
   render: function render() {
-    if (this.h || server) {
+    if (this.h) {
       var args = this.props.args;
 
       var n = args.length;

@@ -1,4 +1,4 @@
-import { isArray, inherit, object0, acyclicEqualsU, isString, dissocPartialU, assocPartialU } from 'infestines';
+import { isArray, inherit, object0, isString, dissocPartialU, assocPartialU } from 'infestines';
 import { Component, createElement, Fragment, forwardRef } from 'react';
 export { Fragment } from 'react';
 import { Property } from 'kefir';
@@ -145,29 +145,53 @@ function doUnsubscribe(self, _ref2) {
   }
 }
 
-var server = typeof window === 'undefined' && { h: null, forceUpdate: function forceUpdate() {}
-};
+function decObs(obs2num, property) {
+  obs2num.set(property, (obs2num.get(property) || 0) - 1);
+}
+
+function incObs(obs2num, property) {
+  obs2num.set(property, (obs2num.get(property) || 0) + 1);
+}
+
+function updateObs(delta, property, obs2num) {
+  if (delta < 0) do {
+    property.offAny(obs2num.h);
+  } while (++delta);else if (0 < delta) do {
+    property.onAny(obs2num.h);
+  } while (--delta);
+}
+
+var server = typeof window === 'undefined' ? { h: null, forceUpdate: function forceUpdate() {}
+} : null;
 
 var FromClass = /*#__PURE__*/inherit(function FromClass(props) {
   Component.call(this, props);
-  this.h = null;
-  if (server) this.state = object0;
+  if (this.h = server) this.state = object0;
 }, Component, {
   componentDidMount: function componentDidMount() {
     doSubscribe(this, this.props);
   },
-  componentDidUpdate: function componentDidUpdate(prevProps) {
-    var props = this.props;
-    if (!acyclicEqualsU(props, prevProps)) {
-      doUnsubscribe(this, prevProps);
-      doSubscribe(this, props);
-    }
+  componentDidUpdate: function componentDidUpdate(_ref3) {
+    var before = _ref3.args;
+    var after = this.props.args;
+
+
+    var obs2num = new Map();
+    obs2num.h = this.h;
+
+    forEachInProps(before[1], obs2num, decObs);
+    forEachInChildren(2, before, obs2num, decObs);
+
+    forEachInProps(after[1], obs2num, incObs);
+    forEachInChildren(2, after, obs2num, incObs);
+
+    obs2num.forEach(updateObs);
   },
   componentWillUnmount: function componentWillUnmount() {
     doUnsubscribe(this, this.props);
   },
   render: function render() {
-    if (this.h || server) {
+    if (this.h) {
       var args = this.props.args;
 
       var n = args.length;
