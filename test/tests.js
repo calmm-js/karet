@@ -1,4 +1,5 @@
 import * as Kefir from 'kefir'
+import * as L from 'partial.lenses'
 
 import * as React from '../dist/karet.cjs'
 import {Component} from 'react'
@@ -15,12 +16,15 @@ function show(x) {
   }
 }
 
+const assertSame = ({actual, expect}) => {
+  if (actual !== expect)
+    throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
+}
+
 const testRender = (vdom, expect) =>
   it(`${expect}`, () => {
     const actual = ReactDOM.renderToStaticMarkup(vdom)
-
-    if (actual !== expect)
-      throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
+    assertSame({actual, expect})
   })
 
 describe('basics', () => {
@@ -124,6 +128,11 @@ describe('basics', () => {
     '<div><div>a</div><div>b</div><div>c</div><div>d</div></div>'
   )
 
+  testRender(
+    <div className={Kefir.later(100, 'bar').toProperty()} children="foo" />,
+    '<div>foo</div>'
+  )
+
   const ChildrenWithSibling = ({children}) => <div>Test: {children}</div>
 
   testRender(
@@ -183,6 +192,43 @@ describe('fromClass', () => {
   )
 
   testRender(<P>{[Kefir.constant('Hello')]}</P>, '<p>Hello</p>')
+})
+
+describe('simulated frontend', () => {
+  it('works as expected', () => {
+    const {type, props} = React.createElement('div', {}, Kefir.constant('foo'))
+    const element = new type(props)
+    element.h = null // This makes `render` believe we are in frontend.
+
+    assertSame({expect: null, actual: element.render()})
+
+    let calledForceUpdate = false
+    element.forceUpdate = () => (calledForceUpdate = true)
+
+    element.componentDidMount()
+    assertSame({expect: true, actual: calledForceUpdate})
+
+    assertSame({
+      expect: 'foo',
+      actual: L.get(['props', 'children'], element.render())
+    })
+    element.componentDidUpdate(props)
+
+    assertSame({
+      expect: 'foo',
+      actual: L.get(['props', 'children'], element.render())
+    })
+
+    element.props = L.set(['args', 2], Kefir.constant('bar'), props)
+    element.componentDidUpdate(props)
+
+    assertSame({
+      expect: 'bar',
+      actual: L.get(['props', 'children'], element.render())
+    })
+
+    element.componentWillUnmount()
+  })
 })
 
 describe('context', () => {
