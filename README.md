@@ -61,6 +61,9 @@ properties.  This works because Karet exports an enhanced version of
 
 [Here is a live example in CodeSandbox](https://codesandbox.io/s/2o1mmnwxvp).
 
+[More links to live examples in the Calmm documentation
+Wiki](https://github.com/calmm-js/documentation/wiki/Links-to-live-examples).
+
 **NOTE:** Karet does not pass through all named React exports.  Only
 `createElement` and [`Fragment`](#Fragment) are exported, which is all that is
 needed for basic use of VDOM or the Babel JSX transform.
