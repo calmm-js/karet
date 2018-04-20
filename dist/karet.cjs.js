@@ -36,6 +36,7 @@ function renderChildren(children) {
   for (var i = 0, n = children.length; i < n; ++i) {
     var v = children[i];
     var w = isProperty(v) ? valueOf(v) : I.isArray(v) ? renderChildren(v) : v;
+    if (w === undefined) w = null;
     if (v !== w) {
       if (newChildren === children) newChildren = children.slice(0);
       newChildren[i] = w;
@@ -203,7 +204,9 @@ var FromClass = /*#__PURE__*/I.inherit(function FromClass(props) {
       newArgs[1] = renderProps(args[1]);
       for (var i = 2; i < n; ++i) {
         var v = args[i];
-        newArgs[i] = isProperty(v) ? valueOf(v) : I.isArray(v) ? renderChildren(v) : v;
+        v = isProperty(v) ? valueOf(v) : I.isArray(v) ? renderChildren(v) : v;
+        if (v === undefined) v = null;
+        newArgs[i] = v;
       }
       return React.createElement.apply(null, newArgs);
     } else {
