@@ -170,6 +170,7 @@ describe('Fragment', () => {
     <React.Fragment>{Kefir.constant(<p>Yes</p>)}</React.Fragment>,
     '<p>Yes</p>'
   )
+  testRender(<React.Fragment>{Kefir.constant(undefined)}</React.Fragment>, '')
 })
 
 describe('fromClass', () => {
@@ -200,7 +201,10 @@ describe('simulated frontend', () => {
     const element = new type(props)
     element.h = null // This makes `render` believe we are in frontend.
 
-    assertSame({expect: null, actual: element.render()})
+    assertSame({
+      expect: '',
+      actual: ReactDOM.renderToStaticMarkup(element.render())
+    })
 
     let calledForceUpdate = false
     element.forceUpdate = () => (calledForceUpdate = true)
