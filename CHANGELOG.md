@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.2.1
+
+Changed rendering of children to replace `undefined` children with `null`
+children, because `React.Fragment` apparently does not like `undefined`
+children.
+
 ## 3.0.0
 
 Only Kefir properties, in other words, objects that inherit `Kefir.Property`,
