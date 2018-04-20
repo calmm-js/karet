@@ -34,7 +34,6 @@
     for (var i = 0, n = children.length; i < n; ++i) {
       var v = children[i];
       var w = isProperty(v) ? valueOf(v) : I.isArray(v) ? renderChildren(v) : v;
-      if (w === undefined) w = null;
       if (v !== w) {
         if (newChildren === children) newChildren = children.slice(0);
         newChildren[i] = w;
@@ -198,14 +197,13 @@
 
         var n = args.length;
         var newArgs = Array(n);
-        newArgs[0] = args[0];
+        var type = newArgs[0] = args[0];
         newArgs[1] = renderProps(args[1]);
         for (var i = 2; i < n; ++i) {
           var v = args[i];
-          v = isProperty(v) ? valueOf(v) : I.isArray(v) ? renderChildren(v) : v;
-          if (v === undefined) v = null;
-          newArgs[i] = v;
+          newArgs[i] = isProperty(v) ? valueOf(v) : I.isArray(v) ? renderChildren(v) : v;
         }
+        if (type === React.Fragment && n < 4 && null == newArgs[2]) return null;
         return React.createElement.apply(null, newArgs);
       } else {
         return null;
