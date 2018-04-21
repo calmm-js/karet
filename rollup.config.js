@@ -4,15 +4,17 @@ import nodeResolve from 'rollup-plugin-node-resolve'
 import replace from 'rollup-plugin-replace'
 import uglify from 'rollup-plugin-uglify'
 
+const globals = {
+  infestines: 'I',
+  kefir: 'Kefir',
+  react: 'React'
+}
+
 const build = ({NODE_ENV, format, suffix}) => ({
-  external: ['infestines', 'react', 'kefir'],
+  external: Object.keys(globals),
   input: 'src/karet.js',
   output: {
-    globals: {
-      infestines: 'I',
-      kefir: 'Kefir',
-      react: 'React'
-    },
+    globals,
     exports: 'named',
     name: 'karet',
     format,
