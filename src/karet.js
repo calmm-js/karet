@@ -244,20 +244,14 @@ function hasPropertiesInProps(props) {
 
 function considerLifting(args) {
   const props = args[1]
-  if (hasPropertiesInProps(props) || hasPropertiesInChildren(2, args)) {
-    const fromClassProps = {args}
-    if (props) {
-      const key = props.key
-      if (null != key) fromClassProps.key = key
-    }
-    return React.createElement(FromClass, fromClassProps)
-  } else {
-    return React.createElement.apply(null, args)
-  }
+  return hasPropertiesInProps(props) || hasPropertiesInChildren(2, args)
+    ? React.createElement(FromClass, {args, key: props.key})
+    : React.createElement.apply(null, args)
 }
 
 export function createElement(type, props, _child) {
-  const lift = props && props[LIFT]
+  props = props || I.object0
+  const lift = props[LIFT]
   if (lift || !I.isFunction(type)) {
     const n = arguments.length
     const args = Array(n)
