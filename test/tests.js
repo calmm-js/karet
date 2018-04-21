@@ -274,3 +274,16 @@ describe('context', () => {
     '<div><div>Top <div>Middle <div>Bottom Hello</div></div></div></div>'
   )
 })
+
+describe('exceptions', () => {
+  it('throws on errors', () => {
+    const error = Kefir.constantError('did throw')
+    let raised = 'did not throw'
+    try {
+      ReactDOM.renderToStaticMarkup(<div>{error}</div>)
+    } catch (e) {
+      raised = e
+    }
+    assertSame({expect: 'did throw', actual: raised})
+  })
+})
