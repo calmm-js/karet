@@ -1,13 +1,9 @@
 import * as I from 'infestines'
+import * as L from 'partial.lenses'
 import * as React from 'react'
 import {Property} from 'kefir'
 
 //
-
-const STYLE = 'style'
-const DANGEROUSLY = 'dangerouslySetInnerHTML'
-
-const CHILDREN = 'children'
 
 const LIFT = 'karet-lift'
 
@@ -22,99 +18,20 @@ function valueOf(p) {
 
 //
 
-function renderChildren(children) {
-  let newChildren = children
-  for (let i = 0, n = children.length; i < n; ++i) {
-    const v = children[i]
-    const w = isProperty(v) ? valueOf(v) : I.isArray(v) ? renderChildren(v) : v
-    if (v !== w) {
-      if (newChildren === children) newChildren = children.slice(0)
-      newChildren[i] = w
-    }
-  }
-  return newChildren
-}
-
-function renderObject(object) {
-  let newObject = null
-  for (const i in object) {
-    const v = object[i]
-    if (isProperty(v)) {
-      if (!newObject) {
-        newObject = {}
-        for (const j in object) {
-          if (j === i) break
-          newObject[j] = object[j]
-        }
-      }
-      newObject[i] = valueOf(v)
-    } else if (newObject) {
-      newObject[i] = v
-    }
-  }
-  return newObject || object
-}
-
-function renderProps(props) {
-  let newProps = null
-  for (const i in props) {
-    const v = props[i]
-    const w = isProperty(v)
-      ? valueOf(v)
-      : CHILDREN === i
-        ? I.isArray(v) ? renderChildren(v) : v
-        : STYLE === i || DANGEROUSLY === i ? renderObject(v) : v
-    if (v !== w) {
-      if (!newProps) {
-        newProps = {}
-        for (const j in props) {
-          if (j === i) break
-          newProps[j] = props[j]
-        }
-      }
-      newProps[i] = w
-    } else if (newProps) {
-      newProps[i] = w
-    }
-  }
-  return newProps || props
-}
+const inProperty = L.when(isProperty)
+const inChildren = L.toFunction([L.flatten, inProperty])
+const inValues = L.ifElse(isProperty, L.identity, [L.values, inProperty])
+const inProps = L.branchOr(inProperty, {
+  children: inChildren,
+  style: inValues,
+  dangerouslySetInnerHTML: inValues
+})
+const inArgs = L.toFunction([
+  L.elems,
+  L.choose((_, i) => (1 < i ? inChildren : 1 === i ? inProps : inProperty))
+])
 
 //
-
-function forEachInChildren(i, children, extra, fn) {
-  for (let n = children.length; i < n; ++i) {
-    const c = children[i]
-    if (isProperty(c)) fn(extra, c)
-    else if (I.isArray(c)) forEachInChildren(0, c, extra, fn)
-  }
-}
-
-function forEachInProps(props, extra, fn) {
-  for (const i in props) {
-    const v = props[i]
-    if (isProperty(v)) {
-      fn(extra, v)
-    } else if (CHILDREN === i) {
-      if (I.isArray(v)) forEachInChildren(0, v, extra, fn)
-    } else if (STYLE === i || DANGEROUSLY === i) {
-      for (const j in v) {
-        const vj = v[j]
-        if (isProperty(vj)) fn(extra, vj)
-      }
-    }
-  }
-}
-
-//
-
-function offAny(handler, property) {
-  property.offAny(handler)
-}
-
-function onAny(handler, property) {
-  property.onAny(handler)
-}
 
 function doSubscribe(self, {args}) {
   let handler = self.h
@@ -128,21 +45,11 @@ function doSubscribe(self, {args}) {
       }
     }
 
-  forEachInProps(args[1], handler, onAny)
-  forEachInChildren(2, args, handler, onAny)
+  L.forEach(p => p.onAny(handler), inArgs, args)
 }
 
 function doUnsubscribe({h}, {args}) {
-  forEachInChildren(2, args, h, offAny)
-  forEachInProps(args[1], h, offAny)
-}
-
-function decObs(p2n, property) {
-  p2n.set(property, (p2n.get(property) || 0) - 1)
-}
-
-function incObs(p2n, property) {
-  p2n.set(property, (p2n.get(property) || 0) + 1)
+  L.forEach(p => p.offAny(h), inArgs, args)
 }
 
 function updateObs(delta, property, p2n) {
@@ -163,17 +70,12 @@ const FromClass = I.inherit(
     componentDidMount() {
       doSubscribe(this, this.props)
     },
-    componentDidUpdate({args: before}) {
-      const {args: after} = this.props
-
+    componentDidUpdate(prevProps) {
       const p2n = new Map()
       p2n.h = this.h
 
-      forEachInProps(before[1], p2n, decObs)
-      forEachInChildren(2, before, p2n, decObs)
-
-      forEachInProps(after[1], p2n, incObs)
-      forEachInChildren(2, after, p2n, incObs)
+      L.forEach(p => p2n.set(p, (p2n.get(p) || 0) - 1), inArgs, prevProps.args)
+      L.forEach(p => p2n.set(p, (p2n.get(p) || 0) + 1), inArgs, this.props.args)
 
       p2n.forEach(updateObs)
     },
@@ -182,19 +84,9 @@ const FromClass = I.inherit(
     },
     render() {
       if (this.h) {
-        const {args} = this.props
-        const n = args.length
-        const newArgs = Array(n)
-        const type = (newArgs[0] = args[0])
-        newArgs[1] = renderProps(args[1])
-        for (let i = 2; i < n; ++i) {
-          const v = args[i]
-          newArgs[i] = isProperty(v)
-            ? valueOf(v)
-            : I.isArray(v) ? renderChildren(v) : v
-        }
-        if (type === React.Fragment && n < 4 && null == newArgs[2]) return null
-        return React.createElement.apply(null, newArgs)
+        const args = L.modify(inArgs, valueOf, this.props.args)
+        if (args[0] === React.Fragment && args.length < 3) return null
+        return React.createElement.apply(null, args)
       } else {
         return null
       }
@@ -211,42 +103,15 @@ const FromClass = I.inherit(
 
 //
 
-function hasPropertiesInChildren(i, children) {
-  for (let n = children.length; i < n; ++i) {
-    const c = children[i]
-    if (isProperty(c) || (I.isArray(c) && hasPropertiesInChildren(0, c)))
-      return true
-  }
-  return false
-}
-
-function hasPropertiesInProps(props) {
-  for (const i in props) {
-    const v = props[i]
-    if (isProperty(v)) {
-      return true
-    } else if (CHILDREN === i) {
-      if (I.isArray(v) && hasPropertiesInChildren(0, v)) return true
-    } else if (STYLE === i || DANGEROUSLY === i) {
-      for (const j in v) if (isProperty(v[j])) return true
-    }
-  }
-  return false
-}
-
-//
-
-function considerLifting(args) {
-  const props = args[1]
-  return hasPropertiesInProps(props) || hasPropertiesInChildren(2, args)
-    ? React.createElement(FromClass, {args, key: props.key})
+const considerLifting = args =>
+  L.select(inArgs, args)
+    ? React.createElement(FromClass, {args, key: args[1].key})
     : React.createElement.apply(null, args)
-}
 
 export function createElement(type, props, _child) {
   props = props || I.object0
   const lift = props[LIFT]
-  if (lift || I.isString(type) || React.Fragment === type) {
+  if (lift || I.isString(type) || React.Fragment === type || isProperty(type)) {
     const n = arguments.length
     const args = Array(n)
     args[0] = type

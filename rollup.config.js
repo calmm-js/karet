@@ -5,6 +5,7 @@ import replace from 'rollup-plugin-replace'
 import uglify from 'rollup-plugin-uglify'
 
 const globals = {
+  'partial.lenses': 'L',
   infestines: 'I',
   kefir: 'Kefir',
   react: 'React'
