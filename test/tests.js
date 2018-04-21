@@ -202,6 +202,8 @@ describe('Fragment', () => {
 
 describe('fromClass', () => {
   const P = React.fromClass('p')
+  testRender(<P />, '<p></p>')
+
   testRender(<P ref={() => {}}>Hello</P>, '<p>Hello</p>')
 
   testRender(<P>Hello, {'world'}!</P>, '<p>Hello, world!</p>')
