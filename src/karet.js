@@ -172,16 +172,16 @@ const FromClass = I.inherit(
     componentDidUpdate({args: before}) {
       const {args: after} = this.props
 
-      const obs2num = new Map()
-      obs2num.h = this.h
+      const p2n = new Map()
+      p2n.h = this.h
 
-      forEachInProps(before[1], obs2num, decObs)
-      forEachInChildren(2, before, obs2num, decObs)
+      forEachInProps(before[1], p2n, decObs)
+      forEachInChildren(2, before, p2n, decObs)
 
-      forEachInProps(after[1], obs2num, incObs)
-      forEachInChildren(2, after, obs2num, incObs)
+      forEachInProps(after[1], p2n, incObs)
+      forEachInChildren(2, after, p2n, incObs)
 
-      obs2num.forEach(updateObs)
+      p2n.forEach(updateObs)
     },
     componentWillUnmount() {
       doUnsubscribe(this, this.props)

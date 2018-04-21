@@ -95,10 +95,10 @@ describe('basics', () => {
   )
 
   testRender(
-    <a href={Kefir.constant('#lol')} style={Kefir.constant({color: 'red'})}>
+    <a style={Kefir.constant({color: 'red'})} href={Kefir.constant('#lol')}>
       {Kefir.constant('Hello')} {Kefir.constant('world!')}
     </a>,
-    '<a href="#lol" style="color:red">Hello world!</a>'
+    '<a style="color:red" href="#lol">Hello world!</a>'
   )
 
   testRender(
