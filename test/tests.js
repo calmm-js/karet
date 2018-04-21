@@ -59,7 +59,7 @@ describe('basics', () => {
       style={{
         display: 'block',
         color: Kefir.constant('red'),
-        background: 'green'
+        background: Kefir.constant('green')
       }}>
       <p>{Kefir.constant(['Hello'])}</p>
       <p>{Kefir.constant(['World'])}</p>
@@ -68,7 +68,34 @@ describe('basics', () => {
   )
 
   testRender(
-    <a href="#lol" style={Kefir.constant({color: 'red'})}>
+    <div
+      onClick={() => {}}
+      style={{
+        display: 'block',
+        color: Kefir.constant('red'),
+        background: 'green'
+      }}>
+      <p>{[Kefir.constant('Hel'), [Kefir.constant('lo')]]}</p>
+      <p>{Kefir.constant(['World'])}</p>
+    </div>,
+    '<div style="display:block;color:red;background:green"><p>Hello</p><p>World</p></div>'
+  )
+
+  testRender(
+    <div
+      onClick={() => {}}
+      style={{
+        display: 'block',
+        color: 'red',
+        background: 'green'
+      }}>
+      {[Kefir.constant('Hel'), [Kefir.constant('lo')]]}
+    </div>,
+    '<div style="display:block;color:red;background:green">Hello</div>'
+  )
+
+  testRender(
+    <a href={Kefir.constant('#lol')} style={Kefir.constant({color: 'red'})}>
       {Kefir.constant('Hello')} {Kefir.constant('world!')}
     </a>,
     '<a href="#lol" style="color:red">Hello world!</a>'
