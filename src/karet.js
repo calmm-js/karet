@@ -137,12 +137,12 @@ function doUnsubscribe({h}, {args}) {
   forEachInProps(args[1], h, offAny)
 }
 
-function decObs(obs2num, property) {
-  obs2num.set(property, (obs2num.get(property) || 0) - 1)
+function decObs(p2n, property) {
+  p2n.set(property, (p2n.get(property) || 0) - 1)
 }
 
-function incObs(obs2num, property) {
-  obs2num.set(property, (obs2num.get(property) || 0) + 1)
+function incObs(p2n, property) {
+  p2n.set(property, (p2n.get(property) || 0) + 1)
 }
 
 function updateObs(delta, property, obs2num) {
