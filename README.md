@@ -14,7 +14,7 @@ properties into VDOM has the following benefits:
     component is mounted.
   * Only elements that contain embedded properties are rerendered when changes
     are pushed through observables.  An update to a deeply nested VDOM element
-    can be an O(1) operation.
+    can be an `O(1)` operation.
 
 Using Karet couldn't be simpler.  Usually you just `import * as React from
 'karet'` and you are good to go.
