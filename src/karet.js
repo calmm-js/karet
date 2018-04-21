@@ -145,15 +145,9 @@ function incObs(p2n, property) {
   p2n.set(property, (p2n.get(property) || 0) + 1)
 }
 
-function updateObs(delta, property, obs2num) {
-  if (delta < 0)
-    do {
-      property.offAny(obs2num.h)
-    } while (++delta)
-  else if (0 < delta)
-    do {
-      property.onAny(obs2num.h)
-    } while (--delta)
+function updateObs(delta, property, p2n) {
+  for (; delta < 0; ++delta) property.offAny(p2n.h)
+  for (; 0 < delta; --delta) property.onAny(p2n.h)
 }
 
 const server =
