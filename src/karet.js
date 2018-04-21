@@ -4,9 +4,6 @@ import {Property} from 'kefir'
 
 //
 
-const VALUE = 'value'
-const ERROR = 'error'
-
 const STYLE = 'style'
 const DANGEROUSLY = 'dangerouslySetInnerHTML'
 
@@ -124,9 +121,9 @@ function doSubscribe(self, {args}) {
   if (!handler)
     handler = self.h = e => {
       const {type} = e
-      if (type === VALUE) {
+      if (type === 'value') {
         self.forceUpdate()
-      } else if (type === ERROR) {
+      } else if (type === 'error') {
         throw e.value
       }
     }
