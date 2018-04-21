@@ -135,12 +135,9 @@ function doSubscribe(self, {args}) {
   forEachInChildren(2, args, handler, onAny)
 }
 
-function doUnsubscribe(self, {args}) {
-  const handler = self.h
-  if (handler) {
-    forEachInChildren(2, args, handler, offAny)
-    forEachInProps(args[1], handler, offAny)
-  }
+function doUnsubscribe({h}, {args}) {
+  forEachInChildren(2, args, h, offAny)
+  forEachInProps(args[1], h, offAny)
 }
 
 function decObs(obs2num, property) {
