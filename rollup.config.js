@@ -27,8 +27,10 @@ const build = ({NODE_ENV, format, suffix}) => ({
       include: 'node_modules/**',
       namedExports: {
         'node_modules/react/index.js': [
+          'Children',
           'Component',
           'Fragment',
+          'createContext',
           'createElement',
           'forwardRef'
         ]

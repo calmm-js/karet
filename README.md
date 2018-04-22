@@ -30,7 +30,7 @@ Using Karet couldn't be simpler.  Usually you just `import * as React from
 
 * [Tutorial](#tutorial)
 * [Reference](#reference)
-  * [`Fragment`](#Fragment)
+  * [React exports passed through](#react-exports-passed-through)
   * [`karet-lift` attribute](#karet-lift)
   * [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Property props)")
 
@@ -59,26 +59,51 @@ with VDOM that can have embedded [Kefir](https://kefirjs.github.io/kefir/)
 properties.  This works because Karet exports an enhanced version of
 `createElement`.
 
+Note that the result, like the date and time display above, is *just* a React
+component.  If you export it, you can use it just like any other React component
+and even in modules that do not import `karet`.
+
 [Here is a live example in CodeSandbox](https://codesandbox.io/s/2o1mmnwxvp).
 
 [More links to live examples in the Calmm documentation
 Wiki](https://github.com/calmm-js/documentation/wiki/Links-to-live-examples).
 
-**NOTE:** Karet does not pass through all named React exports.  Only
-`createElement` and [`Fragment`](#Fragment) are exported, which is all that is
-needed for basic use of VDOM or the Babel JSX transform.
-
-**NOTE:** The result, like the date and time dispplay above, is *just* a React
-component.  If you export it, you can use it just like any other React component
-and even in modules that do not import `karet`.
-
 ## <a id="reference"></a> [≡](#contents) Reference
 
-### <a id="Fragment"></a> [≡](#contents) [`Fragment`](#Fragment)
+### <a id="react-exports-passed-through"></a> [≡](#contents) [React exports passed through](#react-exports-passed-through)
 
-In addition to `createElement`, Karet exports [React's `Fragment`
-component](https://reactjs.org/docs/fragments.html) and lifts fragments
-implicitly.
+Karet passes through the following exports from React:
+
+* [`Children`](https://reactjs.org/docs/react-api.html#reactchildren) as is.
+  Note that with observable properties in children these functions may not do
+  exactly what you want and you might want to
+  [lift](https://github.com/calmm-js/karet.util#lifting) them.
+* [`Fragment`](https://reactjs.org/docs/fragments.html) as is.  It should work
+  without problems.
+* [`createContext`](https://reactjs.org/docs/context.html#reactcreatecontext) as
+  is.  Note that with Karet it is preferable to put observable properties into
+  the context and let changes propagate through them rather than update the
+  context.
+* [`createElement`](https://reactjs.org/docs/react-api.html#createelement) which
+  lifts Kefir properties in [fragments](https://reactjs.org/docs/fragments.html)
+  and built-in HTML elements.
+* [`forwardRef`](https://reactjs.org/docs/react-api.html#reactforwardref) as is.
+
+Notably the following are not exported:
+
+* [`Component`](https://reactjs.org/docs/react-api.html#reactcomponent) and
+  [`PureComponent`](https://reactjs.org/docs/react-api.html#reactpurecomponent),
+  because with Karet you really don't need them and the `render` method can
+  cause undesired component remounting when used with observable properties
+  embedded into VDOM.
+* [`cloneElement`](https://reactjs.org/docs/react-api.html#cloneelement) does
+  not work out of the box with elements containing Kefir properties.  It should
+  be possible [to support it](https://github.com/calmm-js/karet/issues/6),
+  however.
+* [`createRef`](https://reactjs.org/docs/react-api.html#reactcreateref) is not
+  exported, because [Karet Util](https://github.com/calmm-js/karet.util)
+  provides an [alternative](https://github.com/calmm-js/karet.util/#U-refTo)
+  that works better with observable properties.
 
 ### <a id="karet-lift"></a> [≡](#contents) [`karet-lift` attribute](#karet-lift)
 
