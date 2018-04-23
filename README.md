@@ -83,7 +83,11 @@ Karet passes through the following exports from React:
 * [`createContext`](https://reactjs.org/docs/context.html#reactcreatecontext) as
   is.  Note that with Karet it is preferable to put observable properties into
   the context and let changes propagate through them rather than update the
-  context.
+  context.  See the CodeSandbox examples
+  * [Exam Events Form](https://codesandbox.io/s/x20w218owo) where the context is
+    used to transmit the language as an observable atom, and
+  * [Form using Context](https://codesandbox.io/s/2rq54pgrp) where context is
+    used to transmit form properties to form elements.
 * [`createElement`](https://reactjs.org/docs/react-api.html#createelement) which
   lifts Kefir properties in [fragments](https://reactjs.org/docs/fragments.html)
   and built-in HTML elements.
