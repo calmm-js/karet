@@ -2,7 +2,6 @@ import * as Kefir from 'kefir'
 import * as L from 'partial.lenses'
 
 import * as React from '../dist/karet.cjs'
-import {createContext} from 'react'
 import ReactDOM from 'react-dom/server'
 
 function show(x) {
@@ -264,7 +263,7 @@ describe('simulated frontend', () => {
 })
 
 describe('context', () => {
-  const {Provider, Consumer} = createContext({})
+  const {Provider, Consumer} = React.createContext({})
 
   testRender(
     <Provider value={Kefir.constant('It is')}>
