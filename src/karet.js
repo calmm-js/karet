@@ -246,7 +246,7 @@ function considerLifting(args) {
 export function createElement(type, props, _child) {
   props = props || I.object0
   const lift = props[LIFT]
-  if (lift || !I.isFunction(type)) {
+  if (lift || I.isString(type) || React.Fragment === type) {
     const n = arguments.length
     const args = Array(n)
     args[0] = type

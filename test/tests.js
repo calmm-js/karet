@@ -2,9 +2,8 @@ import * as Kefir from 'kefir'
 import * as L from 'partial.lenses'
 
 import * as React from '../dist/karet.cjs'
-import {Component} from 'react'
+import {createContext} from 'react'
 import ReactDOM from 'react-dom/server'
-import PropTypes from 'prop-types'
 
 function show(x) {
   switch (typeof x) {
@@ -265,42 +264,19 @@ describe('simulated frontend', () => {
 })
 
 describe('context', () => {
-  class Context extends Component {
-    constructor(props) {
-      super(props)
-    }
-    getChildContext() {
-      return this.props.context
-    }
-    render() {
-      return <div>{this.props.children}</div>
-    }
-  }
-  Context.childContextTypes = {message: PropTypes.any}
-
-  const Bottom = (_, context) => (
-    <div>
-      {Kefir.constant('Bottom')} {context.message}
-    </div>
-  )
-  Bottom.contextTypes = {message: PropTypes.any}
-
-  const Middle = () => (
-    <div>
-      {Kefir.constant('Middle')} <Bottom />
-    </div>
-  )
-  const Top = () => (
-    <div>
-      {Kefir.constant('Top')} <Middle />
-    </div>
-  )
+  const {Provider, Consumer} = createContext({})
 
   testRender(
-    <Context context={{message: Kefir.constant('Hello')}}>
-      <Top />
-    </Context>,
-    '<div><div>Top <div>Middle <div>Bottom Hello</div></div></div></div>'
+    <Provider value={Kefir.constant('It is')}>
+      <Consumer>
+        {message => (
+          <div>
+            {message} {(message instanceof Kefir.Property).toString()}!
+          </div>
+        )}
+      </Consumer>
+    </Provider>,
+    '<div>It is true!</div>'
   )
 })
 
