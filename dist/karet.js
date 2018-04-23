@@ -6,9 +6,6 @@
 
   //
 
-  var VALUE = 'value';
-  var ERROR = 'error';
-
   var STYLE = 'style';
   var DANGEROUSLY = 'dangerouslySetInnerHTML';
 
@@ -125,9 +122,9 @@
     if (!handler) handler = self.h = function (e) {
       var type = e.type;
 
-      if (type === VALUE) {
+      if (type === 'value') {
         self.forceUpdate();
-      } else if (type === ERROR) {
+      } else if (type === 'error') {
         throw e.value;
       }
     };
@@ -136,30 +133,28 @@
     forEachInChildren(2, args, handler, onAny);
   }
 
-  function doUnsubscribe(self, _ref2) {
-    var args = _ref2.args;
+  function doUnsubscribe(_ref2, _ref3) {
+    var h = _ref2.h;
+    var args = _ref3.args;
 
-    var handler = self.h;
-    if (handler) {
-      forEachInChildren(2, args, handler, offAny);
-      forEachInProps(args[1], handler, offAny);
+    forEachInChildren(2, args, h, offAny);
+    forEachInProps(args[1], h, offAny);
+  }
+
+  function decObs(p2n, property) {
+    p2n.set(property, (p2n.get(property) || 0) - 1);
+  }
+
+  function incObs(p2n, property) {
+    p2n.set(property, (p2n.get(property) || 0) + 1);
+  }
+
+  function updateObs(delta, property, p2n) {
+    for (; delta < 0; ++delta) {
+      property.offAny(p2n.h);
+    }for (; 0 < delta; --delta) {
+      property.onAny(p2n.h);
     }
-  }
-
-  function decObs(obs2num, property) {
-    obs2num.set(property, (obs2num.get(property) || 0) - 1);
-  }
-
-  function incObs(obs2num, property) {
-    obs2num.set(property, (obs2num.get(property) || 0) + 1);
-  }
-
-  function updateObs(delta, property, obs2num) {
-    if (delta < 0) do {
-      property.offAny(obs2num.h);
-    } while (++delta);else if (0 < delta) do {
-      property.onAny(obs2num.h);
-    } while (--delta);
   }
 
   var server = typeof window === 'undefined' ? { h: null, forceUpdate: function forceUpdate() {}
@@ -172,21 +167,21 @@
     componentDidMount: function componentDidMount() {
       doSubscribe(this, this.props);
     },
-    componentDidUpdate: function componentDidUpdate(_ref3) {
-      var before = _ref3.args;
+    componentDidUpdate: function componentDidUpdate(_ref4) {
+      var before = _ref4.args;
       var after = this.props.args;
 
 
-      var obs2num = new Map();
-      obs2num.h = this.h;
+      var p2n = new Map();
+      p2n.h = this.h;
 
-      forEachInProps(before[1], obs2num, decObs);
-      forEachInChildren(2, before, obs2num, decObs);
+      forEachInProps(before[1], p2n, decObs);
+      forEachInChildren(2, before, p2n, decObs);
 
-      forEachInProps(after[1], obs2num, incObs);
-      forEachInChildren(2, after, obs2num, incObs);
+      forEachInProps(after[1], p2n, incObs);
+      forEachInChildren(2, after, p2n, incObs);
 
-      obs2num.forEach(updateObs);
+      p2n.forEach(updateObs);
     },
     componentWillUnmount: function componentWillUnmount() {
       doUnsubscribe(this, this.props);
@@ -247,20 +242,12 @@
 
   function considerLifting(args) {
     var props = args[1];
-    if (hasPropertiesInProps(props) || hasPropertiesInChildren(2, args)) {
-      var fromClassProps = { args: args };
-      if (props) {
-        var key = props.key;
-        if (null != key) fromClassProps.key = key;
-      }
-      return React.createElement(FromClass, fromClassProps);
-    } else {
-      return React.createElement.apply(null, args);
-    }
+    return hasPropertiesInProps(props) || hasPropertiesInChildren(2, args) ? React.createElement(FromClass, { args: args, key: props.key }) : React.createElement.apply(null, args);
   }
 
   function createElement(type, props, _child) {
-    var lift = props && props[LIFT];
+    props = props || I.object0;
+    var lift = props[LIFT];
     if (lift || I.isString(type) || React.Fragment === type) {
       var n = arguments.length;
       var args = Array(n);
@@ -282,7 +269,10 @@
     });
   };
 
+  exports.Children = React.Children;
   exports.Fragment = React.Fragment;
+  exports.createContext = React.createContext;
+  exports.forwardRef = React.forwardRef;
   exports.createElement = createElement;
   exports.fromClass = fromClass;
 
