@@ -83,7 +83,13 @@ Karet passes through the following exports from React:
 * [`createContext`](https://reactjs.org/docs/context.html#reactcreatecontext) as
   is.  Note that with Karet it is preferable to put observable properties into
   the context and let changes propagate through them rather than update the
-  context.  See the CodeSandbox examples
+  context.  Also note that neither the provider nor the consumer are lifted by
+  default.  Lifting the consumer will likely cause no issues, but lifting the
+  provider would eliminate observables from the `value` property and could cause
+  problems.  If you need to have observable children inside the provider, you
+  can wrap the children inside a
+  [`Fragment`](https://reactjs.org/docs/fragments.html).  See the CodeSandbox
+  examples
   * [Exam Events Form](https://codesandbox.io/s/x20w218owo) where the context is
     used to transmit the language as an observable atom, and
   * [Form using Context](https://codesandbox.io/s/2rq54pgrp) where context is
