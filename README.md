@@ -33,6 +33,7 @@ Using Karet couldn't be simpler.  Usually you just `import * as React from
   * [React exports passed through](#react-exports-passed-through)
   * [`karet-lift` attribute](#karet-lift)
   * [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Property props)")
+  * [Known gotchas](#known-gotchas)
 
 ## <a id="tutorial"></a> [≡](#contents) Tutorial
 
@@ -174,3 +175,12 @@ Select](https://github.com/JedWatson/react-select) with embedded [Kefir
 Atoms](https://github.com/calmm-js/kefir.atom).
 
 [Here is a live example in CodeSandbox](https://codesandbox.io/s/7yjj16jz7q).
+
+### <a id="known-gotchas"></a> [≡](#contents) [Known gotchas](#known-gotchas)
+
+The [React inline elements transform
+](https://babeljs.io/docs/plugins/transform-react-inline-elements/) is
+incompatible with Karet, because it bypasses `React.createElement`.  OTOH, the
+[React constant elements
+transform](https://babeljs.io/docs/plugins/transform-react-constant-elements/)
+works just fine with Karet.
