@@ -4,6 +4,7 @@
   "description": "Karet is a library that allows you to embed Kefir properties into React VDOM",
   "module": "dist/karet.es.js",
   "main": "dist/karet.cjs.js",
+  "sideEffects": false,
   "scripts": {
     "dist": "rollup -c",
     "lint": "eslint src test",
