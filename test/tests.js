@@ -177,6 +177,10 @@ describe('basics', () => {
     <div dangerouslySetInnerHTML={{__html: Kefir.constant('oh yes')}} />,
     '<div>oh yes</div>'
   )
+
+  const Elem = Kefir.constant('div')
+
+  testRender(<Elem />, '<div></div>')
 })
 
 describe('Fragment', () => {
