@@ -20,6 +20,7 @@
     "url": "git+https://github.com/calmm-js/karet.git"
   },
   "keywords": [
+    "incremental",
     "jsx",
     "kefir",
     "observables",
