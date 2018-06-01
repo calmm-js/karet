@@ -40,7 +40,7 @@ Using Karet couldn't be simpler.  Usually you just `import * as React from
 To use Karet, you simply import it as `React`:
 
 ```jsx
-import * as React from "karet"
+import * as React from 'karet'
 ```
 
 and you can then write React components:
@@ -126,7 +126,7 @@ For example, you could write:
 
 ```jsx
 import Select from 'react-select'
-import * as React from "karet"
+import * as React from 'karet'
 
 // ...
 
@@ -156,7 +156,7 @@ For example, you could write:
 
 ```jsx
 import Select from 'react-select'
-import * as React from "karet"
+import * as React from 'karet'
 
 const SelectLifted = React.fromClassdate and time dispplay
 
