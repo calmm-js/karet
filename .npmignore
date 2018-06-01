@@ -5,6 +5,7 @@
 .travis.yml
 bench
 bower.json
+coverage
 docs
 scripts
 test
