@@ -158,7 +158,7 @@ For example, you could write:
 import Select from 'react-select'
 import * as React from 'karet'
 
-const SelectLifted = React.fromClassdate and time dispplay
+const SelectLifted = React.fromClass(Select)
 
 const ReactSelect2 = ({value}) => (
   <SelectLifted
