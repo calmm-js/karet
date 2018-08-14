@@ -104,7 +104,7 @@ const FromClass = I.inherit(
 //
 
 const considerLifting = args =>
-  L.select(inArgs, args)
+  L.get(inArgs, args)
     ? React.createElement(FromClass, {args, key: args[1].key})
     : React.createElement.apply(null, args)
 

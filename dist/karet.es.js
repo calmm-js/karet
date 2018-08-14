@@ -1,5 +1,5 @@
 import { inherit, object0, isString, dissocPartialU, assocPartialU } from 'infestines';
-import { when, toFunction, flatten, ifElse, identity, values, branchOr, elems, choose, forEach, modify, select } from 'partial.lenses';
+import { when, toFunction, flatten, ifElse, identity, values, branchOr, elems, choose, forEach, modify, get } from 'partial.lenses';
 import { Component, Fragment, createElement, forwardRef } from 'react';
 export { Children, Fragment, createContext, forwardRef } from 'react';
 import { Property } from 'kefir';
@@ -117,7 +117,7 @@ var FromClass = /*#__PURE__*/inherit(function FromClass(props) {
 //
 
 var considerLifting = function considerLifting(args) {
-  return select(inArgs, args) ? createElement(FromClass, { args: args, key: args[1].key }) : createElement.apply(null, args);
+  return get(inArgs, args) ? createElement(FromClass, { args: args, key: args[1].key }) : createElement.apply(null, args);
 };
 
 function createElement$1(type, props, _child) {

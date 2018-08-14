@@ -1,6 +1,6 @@
 {
   "name": "karet",
-  "version": "3.4.0",
+  "version": "4.0.0",
   "description": "Karet is a library that allows you to embed Kefir properties into React VDOM",
   "module": "dist/karet.es.js",
   "main": "dist/karet.cjs.js",
@@ -46,7 +46,7 @@
     "concurrently": "^3.6.1",
     "eslint": "^5.3.0",
     "eslint-plugin-babel": "^5.1.0",
-    "eslint-plugin-react": "^7.10.0",
+    "eslint-plugin-react": "^7.11.0",
     "kefir": "^3.8.3",
     "mocha": "^5.2.0",
     "nyc": "^12.0.2",
@@ -55,15 +55,15 @@
     "react-dom": "^16.4.2",
     "rollup": "^0.64.1",
     "rollup-plugin-babel": "^3.0.7",
-    "rollup-plugin-commonjs": "^9.1.4",
+    "rollup-plugin-commonjs": "^9.1.5",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^4.0.0",
     "watch-run": "^1.2.5"
   },
   "dependencies": {
-    "infestines": "^0.4.9",
-    "partial.lenses": "^13.11.0"
+    "infestines": "^0.4.10",
+    "partial.lenses": "^14.0.0"
   },
   "peerDependencies": {
     "kefir": "^3.7.0",

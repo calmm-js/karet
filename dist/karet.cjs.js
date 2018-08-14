@@ -120,7 +120,7 @@ var FromClass = /*#__PURE__*/I.inherit(function FromClass(props) {
 //
 
 var considerLifting = function considerLifting(args) {
-  return L.select(inArgs, args) ? React.createElement(FromClass, { args: args, key: args[1].key }) : React.createElement.apply(null, args);
+  return L.get(inArgs, args) ? React.createElement(FromClass, { args: args, key: args[1].key }) : React.createElement.apply(null, args);
 };
 
 function createElement(type, props, _child) {
