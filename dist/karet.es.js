@@ -116,10 +116,6 @@ var FromClass = /*#__PURE__*/inherit(function FromClass(props) {
 
 //
 
-var considerLifting = function considerLifting(args) {
-  return get(inArgs, args) ? createElement(FromClass, { args: args, key: args[1].key }) : createElement.apply(null, args);
-};
-
 function createElement$1(type, props, _child) {
   props = props || object0;
   var lift = props[LIFT];
@@ -130,7 +126,7 @@ function createElement$1(type, props, _child) {
     args[1] = lift ? dissocPartialU(LIFT, props) : props;
     for (var i = 2; i < n; ++i) {
       args[i] = arguments[i];
-    }return considerLifting(args);
+    }return get(inArgs, args) ? createElement(FromClass, { args: args, key: props.key }) : createElement.apply(null, args);
   } else {
     return createElement.apply(null, arguments);
   }
@@ -140,7 +136,8 @@ function createElement$1(type, props, _child) {
 
 var fromClass = function fromClass(type) {
   return forwardRef(function (props, ref) {
-    return considerLifting([type, null == ref ? props : assocPartialU('ref', ref, props)]);
+    var args = [type, null == ref ? props : assocPartialU('ref', ref, props)];
+    return get(inArgs, args) ? createElement(FromClass, { args: args }) : createElement.apply(null, args);
   });
 };
 

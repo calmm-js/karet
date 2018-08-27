@@ -119,10 +119,6 @@ var FromClass = /*#__PURE__*/I.inherit(function FromClass(props) {
 
 //
 
-var considerLifting = function considerLifting(args) {
-  return L.get(inArgs, args) ? React.createElement(FromClass, { args: args, key: args[1].key }) : React.createElement.apply(null, args);
-};
-
 function createElement(type, props, _child) {
   props = props || I.object0;
   var lift = props[LIFT];
@@ -133,7 +129,7 @@ function createElement(type, props, _child) {
     args[1] = lift ? I.dissocPartialU(LIFT, props) : props;
     for (var i = 2; i < n; ++i) {
       args[i] = arguments[i];
-    }return considerLifting(args);
+    }return L.get(inArgs, args) ? React.createElement(FromClass, { args: args, key: props.key }) : React.createElement.apply(null, args);
   } else {
     return React.createElement.apply(null, arguments);
   }
@@ -143,7 +139,8 @@ function createElement(type, props, _child) {
 
 var fromClass = function fromClass(type) {
   return React.forwardRef(function (props, ref) {
-    return considerLifting([type, null == ref ? props : I.assocPartialU('ref', ref, props)]);
+    var args = [type, null == ref ? props : I.assocPartialU('ref', ref, props)];
+    return L.get(inArgs, args) ? React.createElement(FromClass, { args: args }) : React.createElement.apply(null, args);
   });
 };
 
