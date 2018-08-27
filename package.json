@@ -1,6 +1,6 @@
 {
   "name": "karet",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Karet is a library that allows you to embed Kefir properties into React VDOM",
   "module": "dist/karet.es.js",
   "main": "dist/karet.cjs.js",

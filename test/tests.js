@@ -204,6 +204,7 @@ describe('Fragment', () => {
 
 describe('fromClass', () => {
   const P = React.fromClass('p')
+  const Code = React.fromClass('code')
   testRender(<P />, '<p></p>')
 
   testRender(<P ref={() => {}}>Hello</P>, '<p>Hello</p>')
@@ -217,10 +218,10 @@ describe('fromClass', () => {
   testRender(
     <P>
       <code />
-      {[[[<code key={1} />]], [<code key={2} />]]}
+      {[[[<Code key={1}>{Kefir.constant('this')}</Code>]], [<Code key={2} />]]}
       <code />
     </P>,
-    '<p><code></code><code></code><code></code><code></code></p>'
+    '<p><code></code><code>this</code><code></code><code></code></p>'
   )
 
   testRender(<P>{[Kefir.constant('Hello')]}</P>, '<p>Hello</p>')

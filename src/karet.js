@@ -103,11 +103,6 @@ const FromClass = I.inherit(
 
 //
 
-const considerLifting = args =>
-  L.get(inArgs, args)
-    ? React.createElement(FromClass, {args, key: args[1].key})
-    : React.createElement.apply(null, args)
-
 export function createElement(type, props, _child) {
   props = props || I.object0
   const lift = props[LIFT]
@@ -117,7 +112,9 @@ export function createElement(type, props, _child) {
     args[0] = type
     args[1] = lift ? I.dissocPartialU(LIFT, props) : props
     for (let i = 2; i < n; ++i) args[i] = arguments[i]
-    return considerLifting(args)
+    return L.get(inArgs, args)
+      ? React.createElement(FromClass, {args, key: props.key})
+      : React.createElement.apply(null, args)
   } else {
     return React.createElement.apply(null, arguments)
   }
@@ -126,12 +123,15 @@ export function createElement(type, props, _child) {
 //
 
 export const fromClass = type =>
-  React.forwardRef((props, ref) =>
-    considerLifting([
+  React.forwardRef((props, ref) => {
+    const args = [
       type,
       null == ref ? props : I.assocPartialU('ref', ref, props)
-    ])
-  )
+    ]
+    return L.get(inArgs, args)
+      ? React.createElement(FromClass, {args})
+      : React.createElement.apply(null, args)
+  })
 
 //
 
