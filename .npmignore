@@ -8,5 +8,6 @@ bench
 bower.json
 coverage
 docs
+rollup.config.js
 scripts
 test
