@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.1
+
+Fixed bug with use of `key` prop with components created using `fromClass`.
+
 ## 3.2.1
 
 Changed rendering of children to replace `undefined` children with `null`
