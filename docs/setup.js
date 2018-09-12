@@ -1,0 +1,1 @@
+window.React = window.karet

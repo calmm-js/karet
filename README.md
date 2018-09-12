@@ -1,4 +1,4 @@
-# <a id="karet"></a> [≡](#contents) Karet &middot; [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![GitHub stars](https://img.shields.io/github/stars/calmm-js/karet.svg?style=social)](https://github.com/calmm-js/karet) [![npm](https://img.shields.io/npm/dm/karet.svg)](https://www.npmjs.com/package/karet)
+# <a id="karet"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet/index.html#karet) [Karet](#karet) &middot; [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![GitHub stars](https://img.shields.io/github/stars/calmm-js/karet.svg?style=social)](https://github.com/calmm-js/karet) [![npm](https://img.shields.io/npm/dm/karet.svg)](https://www.npmjs.com/package/karet)
 
 Karet is a library that allows you to embed
 [Kefir](https://kefirjs.github.io/kefir/) properties into
@@ -26,7 +26,7 @@ Using Karet couldn't be simpler.  Usually you just `import * as React from
 [![](https://david-dm.org/calmm-js/karet.svg)](https://david-dm.org/calmm-js/karet)
 [![](https://david-dm.org/calmm-js/karet/dev-status.svg)](https://david-dm.org/calmm-js/karet?type=dev)
 
-## <a id="contents"></a> [≡](#contents) Contents
+## <a id="contents"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet/index.html#contents) [Contents](#contents)
 
 * [Tutorial](#tutorial)
 * [Reference](#reference)
@@ -35,7 +35,7 @@ Using Karet couldn't be simpler.  Usually you just `import * as React from
   * [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Property props)")
   * [Known gotchas](#known-gotchas)
 
-## <a id="tutorial"></a> [≡](#contents) Tutorial
+## <a id="tutorial"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet/index.html#tutorial) [Tutorial](#tutorial)
 
 To use Karet, you simply import it as `React`:
 
@@ -69,9 +69,9 @@ and even in modules that do not import `karet`.
 [More links to live examples in the Calmm documentation
 Wiki](https://github.com/calmm-js/documentation/wiki/Links-to-live-examples).
 
-## <a id="reference"></a> [≡](#contents) Reference
+## <a id="reference"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet/index.html#reference) [Reference](#reference)
 
-### <a id="react-exports-passed-through"></a> [≡](#contents) [React exports passed through](#react-exports-passed-through)
+### <a id="react-exports-passed-through"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet/index.html#react-exports-passed-through) [React exports passed through](#react-exports-passed-through)
 
 Karet passes through the following exports from React:
 
@@ -116,7 +116,7 @@ Notably the following are not exported:
   provides an [alternative](https://github.com/calmm-js/karet.util/#U-refTo)
   that works better with observable properties.
 
-### <a id="karet-lift"></a> [≡](#contents) [`karet-lift` attribute](#karet-lift)
+### <a id="karet-lift"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet/index.html#karet-lift) [`karet-lift` attribute](#karet-lift)
 
 Karet only lifts built-in HTML elements and [fragments](#Fragment) implicitly.
 The `karet-lift` attribute on a non-primitive element instructs Karet to lift
@@ -147,7 +147,7 @@ Atoms](https://github.com/calmm-js/kefir.atom).
 
 [Here is a live example in CodeSandbox](https://codesandbox.io/s/7yjj16jz7q).
 
-### <a id="fromClass"></a> [≡](#contents) [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Property props)")
+### <a id="fromClass"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet/index.html#fromClass) [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Property props)")
 
 Karet only lifts built-in HTML elements and [fragments](#Fragment) implicitly.
 `fromClass` allows one to create lifted version of a given React component.
@@ -176,7 +176,7 @@ Atoms](https://github.com/calmm-js/kefir.atom).
 
 [Here is a live example in CodeSandbox](https://codesandbox.io/s/7yjj16jz7q).
 
-### <a id="known-gotchas"></a> [≡](#contents) [Known gotchas](#known-gotchas)
+### <a id="known-gotchas"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet/index.html#known-gotchas) [Known gotchas](#known-gotchas)
 
 The [React inline elements transform
 ](https://babeljs.io/docs/plugins/transform-react-inline-elements/) is
