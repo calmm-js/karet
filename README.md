@@ -118,9 +118,10 @@ Notably the following are not exported:
 
 ### <a id="karet-lift"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet/index.html#karet-lift) [`karet-lift` attribute](#karet-lift)
 
-Karet only lifts built-in HTML elements and [fragments](#Fragment) implicitly.
-The `karet-lift` attribute on a non-primitive element instructs Karet to lift
-the element.
+Karet only lifts built-in HTML elements and
+[fragments](https://reactjs.org/docs/fragments.html) implicitly.  The
+`karet-lift` attribute on a non-primitive element instructs Karet to lift the
+element.
 
 For example, you could write:
 
@@ -149,8 +150,9 @@ Atoms](https://github.com/calmm-js/kefir.atom).
 
 ### <a id="fromClass"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet/index.html#fromClass) [`fromClass(Component)`](#fromClass "fromClass: Component props -> Component (Property props)")
 
-Karet only lifts built-in HTML elements and [fragments](#Fragment) implicitly.
-`fromClass` allows one to create lifted version of a given React component.
+Karet only lifts built-in HTML elements and
+[fragments](https://reactjs.org/docs/fragments.html) implicitly.  `fromClass`
+allows one to create lifted version of a given React component.
 
 For example, you could write:
 
