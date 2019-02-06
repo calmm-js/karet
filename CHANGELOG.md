@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.1.0
+
+Pass thru the export for React's `useContext` hook.
+
 ## 4.0.1
 
 Fixed bug with use of `key` prop with components created using `fromClass`.
