@@ -135,4 +135,4 @@ export const fromClass = type =>
 
 //
 
-export {Children, Fragment, createContext, forwardRef} from 'react'
+export {Children, Fragment, createContext, forwardRef, useContext} from 'react'

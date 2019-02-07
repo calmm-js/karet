@@ -98,6 +98,8 @@ Karet passes through the following exports from React:
   lifts Kefir properties in [fragments](https://reactjs.org/docs/fragments.html)
   and built-in HTML elements.
 - [`forwardRef`](https://reactjs.org/docs/react-api.html#reactforwardref) as is.
+- [`useContext`](https://reactjs.org/docs/hooks-reference.html#usecontext) as
+  is.
 
 Notably the following are not exported:
 
@@ -114,6 +116,14 @@ Notably the following are not exported:
   exported, because [Karet Util](https://github.com/calmm-js/karet.util)
   provides an [alternative](https://github.com/calmm-js/karet.util/#U-refTo)
   that works better with observable properties.
+- [`Suspense` and `lazy`](https://reactjs.org/docs/react-api.html#reactsuspense)
+  are not needed since `import()` returns a promise and you can just convert
+  that to an observable property
+  [like this](https://codesandbox.io/s/n5mvx6v69m).
+- [Most React hooks](https://reactjs.org/docs/hooks-reference.html) are not
+  exported because they are not typically needed in Karet components. State
+  should be handled in [atoms](https://github.com/calmm-js/kefir.atom). Effects
+  can already be handled using observable properties as children or props.
 
 ### <a id="karet-lift"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet/index.html#karet-lift) [`karet-lift` attribute](#karet-lift)
 
