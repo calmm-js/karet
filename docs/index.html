@@ -34,24 +34,24 @@
     <h1><a id="karet"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet/blob/master/README.md#karet">■</a> <a href="#karet">Karet</a> &middot; <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://github.com/calmm-js/karet"><img src="https://img.shields.io/github/stars/calmm-js/karet.svg?style=social" alt="GitHub stars"></a> <a href="https://www.npmjs.com/package/karet"><img src="https://img.shields.io/npm/dm/karet.svg" alt="npm"></a></h1>
 <p>Karet is a library that allows you to embed
 <a href="https://kefirjs.github.io/kefir/">Kefir</a> properties into
-<a href="https://facebook.github.io/react/">React</a> Virtual DOM.  Embedding observable
+<a href="https://facebook.github.io/react/">React</a> Virtual DOM. Embedding observable
 properties into VDOM has the following benefits:</p>
 <ul>
-<li>It allows you to use only <a href="https://facebook.github.io/react/docs/components-and-props.html#functional-and-class-components">functional
-components</a>,
+<li>It allows you to use only
+<a href="https://facebook.github.io/react/docs/components-and-props.html#functional-and-class-components">functional components</a>,
 because you can then use observables for managing state and component
 lifetime, leading to more <strong><em>concise code</em></strong>.</li>
 <li>It helps you to use React in an <strong><em>algorithmically efficient</em></strong> way:<ul>
 <li>The body of a functional component is evaluated only once each time the
 component is mounted.</li>
 <li>Only elements that contain embedded properties are rerendered when changes
-are pushed through observables.  An update to a deeply nested VDOM element
+are pushed through observables. An update to a deeply nested VDOM element
 can be an <code>O(1)</code> operation.</li>
 </ul>
 </li>
 </ul>
-<p>Using Karet couldn&#39;t be simpler.  Usually you just <code>import * as React from
-&#39;karet&#39;</code> and you are good to go.</p>
+<p>Using Karet couldn&#39;t be simpler. Usually you just
+<code>import * as React from &#39;karet&#39;</code> and you are good to go.</p>
 <p><a href="http://badge.fury.io/js/karet"><img src="https://badge.fury.io/js/karet.svg" alt="npm version"></a>
 <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a>
 <a href="https://travis-ci.org/calmm-js/karet"><img src="https://travis-ci.org/calmm-js/karet.svg?branch=master" alt="Build Status"></a>
@@ -82,14 +82,13 @@ can be an <code>O(1)</code> operation.</li>
   &lt;/div&gt;
 )</code></pre>
 <p>with VDOM that can have embedded <a href="https://kefirjs.github.io/kefir/">Kefir</a>
-properties.  This works because Karet exports an enhanced version of
+properties. This works because Karet exports an enhanced version of
 <code>createElement</code>.</p>
 <p>Note that the result, like the date and time display above, is <em>just</em> a React
-component.  If you export it, you can use it just like any other React component
+component. If you export it, you can use it just like any other React component
 and even in modules that do not import <code>karet</code>.</p>
 <p><a href="https://codesandbox.io/s/2o1mmnwxvp">Here is a live example in CodeSandbox</a>.</p>
-<p><a href="https://github.com/calmm-js/documentation/wiki/Links-to-live-examples">More links to live examples in the Calmm documentation
-Wiki</a>.</p>
+<p><a href="https://github.com/calmm-js/documentation/wiki/Links-to-live-examples">More links to live examples in the Calmm documentation Wiki</a>.</p>
 <h2><a id="reference"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet/blob/master/README.md#reference">■</a> <a href="#reference">Reference</a></h2>
 <h3><a id="react-exports-passed-through"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet/blob/master/README.md#react-exports-passed-through">■</a> <a href="#react-exports-passed-through">React exports passed through</a></h3>
 <p>Karet passes through the following exports from React:</p>
@@ -98,17 +97,17 @@ Wiki</a>.</p>
 Note that with observable properties in children these functions may not do
 exactly what you want and you might want to
 <a href="https://github.com/calmm-js/karet.util#lifting">lift</a> them.</li>
-<li><a href="https://reactjs.org/docs/fragments.html"><code>Fragment</code></a> as is.  It should work
+<li><a href="https://reactjs.org/docs/fragments.html"><code>Fragment</code></a> as is. It should work
 without problems.</li>
 <li><a href="https://reactjs.org/docs/context.html#reactcreatecontext"><code>createContext</code></a> as
-is.  Note that with Karet it is preferable to put observable properties into
+is. Note that with Karet it is preferable to put observable properties into
 the context and let changes propagate through them rather than update the
-context.  Also note that neither the provider nor the consumer are lifted by
-default.  Lifting the consumer will likely cause no issues, but lifting the
+context. Also note that neither the provider nor the consumer are lifted by
+default. Lifting the consumer will likely cause no issues, but lifting the
 provider would eliminate observables from the <code>value</code> property and could cause
-problems.  If you need to have observable children inside the provider, you
-can wrap the children inside a
-<a href="https://reactjs.org/docs/fragments.html"><code>Fragment</code></a>.  See the CodeSandbox
+problems. If you need to have observable children inside the provider, you can
+wrap the children inside a
+<a href="https://reactjs.org/docs/fragments.html"><code>Fragment</code></a>. See the CodeSandbox
 examples<ul>
 <li><a href="https://codesandbox.io/s/x20w218owo">Exam Events Form</a> where the context is
 used to transmit the language as an observable atom, and</li>
@@ -120,6 +119,8 @@ used to transmit form properties to form elements.</li>
 lifts Kefir properties in <a href="https://reactjs.org/docs/fragments.html">fragments</a>
 and built-in HTML elements.</li>
 <li><a href="https://reactjs.org/docs/react-api.html#reactforwardref"><code>forwardRef</code></a> as is.</li>
+<li><a href="https://reactjs.org/docs/hooks-reference.html#usecontext"><code>useContext</code></a> as
+is.</li>
 </ul>
 <p>Notably the following are not exported:</p>
 <ul>
@@ -129,17 +130,25 @@ because with Karet you really don&#39;t need them and the <code>render</code> me
 cause undesired component remounting when used with observable properties
 embedded into VDOM.</li>
 <li><a href="https://reactjs.org/docs/react-api.html#cloneelement"><code>cloneElement</code></a> does
-not work out of the box with elements containing Kefir properties.  It should
+not work out of the box with elements containing Kefir properties. It should
 be possible <a href="https://github.com/calmm-js/karet/issues/6">to support it</a>,
 however.</li>
 <li><a href="https://reactjs.org/docs/react-api.html#reactcreateref"><code>createRef</code></a> is not
 exported, because <a href="https://github.com/calmm-js/karet.util">Karet Util</a>
 provides an <a href="https://github.com/calmm-js/karet.util/#U-refTo">alternative</a>
 that works better with observable properties.</li>
+<li><a href="https://reactjs.org/docs/react-api.html#reactsuspense"><code>Suspense</code> and <code>lazy</code></a>
+are not needed since <code>import()</code> returns a promise and you can just convert
+that to an observable property
+<a href="https://codesandbox.io/s/n5mvx6v69m">like this</a>.</li>
+<li><a href="https://reactjs.org/docs/hooks-reference.html">Most React hooks</a> are not
+exported because they are not typically needed in Karet components. State
+should be handled in <a href="https://github.com/calmm-js/kefir.atom">atoms</a>. Effects
+can already be handled using observable properties as children or props.</li>
 </ul>
 <h3><a id="karet-lift"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet/blob/master/README.md#karet-lift">■</a> <a href="#karet-lift"><code>karet-lift</code> attribute</a></h3>
 <p>Karet only lifts built-in HTML elements and
-<a href="https://reactjs.org/docs/fragments.html">fragments</a> implicitly.  The
+<a href="https://reactjs.org/docs/fragments.html">fragments</a> implicitly. The
 <code>karet-lift</code> attribute on a non-primitive element instructs Karet to lift the
 element.</p>
 <p>For example, you could write:</p>
@@ -157,13 +166,13 @@ var ReactSelect1 = ({value}) =&gt; (
     onChange={o =&gt; value.set(o &amp;&amp; o.value)}
   /&gt;
 )</code></pre>
-<p>to be able to use <code>Select</code> from <a href="https://github.com/JedWatson/react-select">React
-Select</a> with embedded <a href="https://github.com/calmm-js/kefir.atom">Kefir
-Atoms</a>.</p>
+<p>to be able to use <code>Select</code> from
+<a href="https://github.com/JedWatson/react-select">React Select</a> with embedded
+<a href="https://github.com/calmm-js/kefir.atom">Kefir Atoms</a>.</p>
 <p><a href="https://codesandbox.io/s/7yjj16jz7q">Here is a live example in CodeSandbox</a>.</p>
 <h3><a id="fromClass"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet/blob/master/README.md#fromClass">■</a> <a href="#fromClass" title="fromClass: Component props -&gt; Component (Property props)"><code>fromClass(Component)</code></a></h3>
 <p>Karet only lifts built-in HTML elements and
-<a href="https://reactjs.org/docs/fragments.html">fragments</a> implicitly.  <code>fromClass</code>
+<a href="https://reactjs.org/docs/fragments.html">fragments</a> implicitly. <code>fromClass</code>
 allows one to create lifted version of a given React component.</p>
 <p>For example, you could write:</p>
 <pre><code class="hljs lang-jsx">import Select from &#39;react-select&#39;
@@ -179,16 +188,15 @@ var ReactSelect2 = ({value}) =&gt; (
     onChange={o =&gt; value.set(o &amp;&amp; o.value)}
   /&gt;
 )</code></pre>
-<p>to be able to use <code>Select</code> from <a href="https://github.com/JedWatson/react-select">React
-Select</a> with embedded <a href="https://github.com/calmm-js/kefir.atom">Kefir
-Atoms</a>.</p>
+<p>to be able to use <code>Select</code> from
+<a href="https://github.com/JedWatson/react-select">React Select</a> with embedded
+<a href="https://github.com/calmm-js/kefir.atom">Kefir Atoms</a>.</p>
 <p><a href="https://codesandbox.io/s/7yjj16jz7q">Here is a live example in CodeSandbox</a>.</p>
 <h3><a id="known-gotchas"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet/blob/master/README.md#known-gotchas">■</a> <a href="#known-gotchas">Known gotchas</a></h3>
-<p>The <a href="https://babeljs.io/docs/plugins/transform-react-inline-elements/">React inline elements transform
-</a> is
-incompatible with Karet, because it bypasses <code>React.createElement</code>.  OTOH, the
-<a href="https://babeljs.io/docs/plugins/transform-react-constant-elements/">React constant elements
-transform</a>
+<p>The
+<a href="https://babeljs.io/docs/plugins/transform-react-inline-elements/">React inline elements transform </a>
+is incompatible with Karet, because it bypasses <code>React.createElement</code>. OTOH, the
+<a href="https://babeljs.io/docs/plugins/transform-react-constant-elements/">React constant elements transform</a>
 works just fine with Karet.</p>
 
     <div class="loading-hidden">

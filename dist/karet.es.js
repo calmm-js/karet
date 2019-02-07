@@ -1,7 +1,7 @@
 import { inherit, object0, isString, dissocPartialU, assocPartialU } from 'infestines';
 import { when, toFunction, flatten, ifElse, identity, values, branchOr, elems, choose, forEach, modify, get } from 'partial.lenses';
 import { Component, Fragment, createElement, forwardRef } from 'react';
-export { Children, Fragment, createContext, forwardRef } from 'react';
+export { Children, Fragment, createContext, forwardRef, useContext } from 'react';
 import { Property } from 'kefir';
 
 //

@@ -145,6 +145,7 @@
   exports.Fragment = React.Fragment;
   exports.createContext = React.createContext;
   exports.forwardRef = React.forwardRef;
+  exports.useContext = React.useContext;
   exports.createElement = createElement;
   exports.fromClass = fromClass;
 
