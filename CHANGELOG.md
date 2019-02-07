@@ -13,7 +13,7 @@ children.
 ## 3.0.0
 
 Only Kefir properties, in other words, objects that inherit `Kefir.Property`,
-are lifted.  `Kefir.Stream` and `Kefir.Observable` objects are not lifted and
+are lifted. `Kefir.Stream` and `Kefir.Observable` objects are not lifted and
 will result in errors.
 
 Dropped previously obsoleted `fromKefir` combinator.
