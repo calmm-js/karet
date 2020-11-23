@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.0
+
+Update to React 17. No code changes required.
+
 ## 4.1.0
 
 Pass thru the export for React's `useContext` hook.
