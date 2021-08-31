@@ -51,7 +51,7 @@
     "eslint-plugin-react": "^7.11.1",
     "kefir": "^3.8.5",
     "klipse-github-docs-generator": "^0.3.7",
-    "livereload": "^0.7.0",
+    "livereload": "^0.9.3",
     "mocha": "^5.2.0",
     "nyc": "^13.0.1",
     "react": "^16.8.0",
